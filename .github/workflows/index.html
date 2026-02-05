@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daytone.fm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="top-bar">
+            <!-- Logo area based on Figma -->
+            <div class="logo-container">
+                 <img src="https://www.figma.com/api/mcp/asset/eff88ec4-c5c5-4946-b1b7-057a7a8533a1" alt="daytone.fm" class="logo-img">
+            </div>
+            
+            <div class="header-globe-wrapper" id="header-globe-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M21 12C21 16.9706 16.9706 21 12 21M21 12C21 7.02944 16.9706 3 12 3M21 12H3M12 21C7.02944 21 3 16.9706 3 12M12 21C12 21 16 18 16 12C16 6 12 3 12 3M12 21C12 21 8 18 8 12C8 6 12 3 12 3M3 12C3 7.02944 7.02944 3 12 3" stroke="#ffffff" stroke-width="1.5"></path> </g></svg>
+            </div>
+
+            <div class="search-bar">
+                <div class="search-icon-wrapper">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#656565" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <!-- <input type="text" placeholder="Anything are you looking for?"> -->
+                <!-- Placeholder styling in CSS is better, just use input -->
+                <input type="text" placeholder="Is there anything that you are looking for?">
+            </div>
+
+            <div class="free-btn-wrapper">
+                <div class="free-btn-bg"></div>
+                <span class="free-text">Free</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content-wrapper">
+            <!-- Main Dark Card Background -->
+            <div class="main-card-bg"></div>
+            
+            <div class="card-content">
+                <!-- Left Section: Album Art & Live Status -->
+                <div class="left-section">
+                    <!-- Radio View Left -->
+                    <div id="left-view-radio" class="view-item-left active">
+                        <div class="live-status">
+                            <div class="live-pill-bg"></div>
+                            <div class="live-content">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                <span class="live-text">Paused</span>
+                            </div>
+                        </div>
+
+                        <div class="album-container">
+                             <img src="https://www.figma.com/api/mcp/asset/c1fdb222-5223-4697-9af2-cb2f09b448e5" class="album-art" alt="Album Art">
+                        </div>
+
+                        <div class="track-info">
+                            <div class="scrolling-text">Your Session 2026_02_03_vo3_mp3</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Write View Left (New) -->
+                    <div id="left-view-write" class="view-item-left">
+                        <!-- Header Row: Live + Pause -->
+                        <div class="left-write-header">
+                             <div class="live-status-small">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                <span>Paused</span>
+                             </div>
+                             
+                             <div class="mini-player-filename">
+                                 <div class="scrolling-text">Your Session 2026_02_03_vo3_mp3</div>
+                             </div>
+
+
+                             <div class="write-pause-btn" id="write-play-btn">
+                                 <!-- Initially Play Icon (since starts paused) -->
+                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                             </div>
+                        </div>
+
+                        <!-- Weekly Progress Card -->
+                        <div class="weekly-card">
+                            <div class="card-title">February, Week 1</div>
+                            <div class="week-days-row">
+                                <div class="day-item active">
+                                    <div class="day-circle"></div>
+                                    <div class="day-label">Sun</div>
+                                    <div class="day-dot"></div>
+                                </div>
+                                <div class="day-item active">
+                                    <div class="day-circle"></div>
+                                    <div class="day-label">Mon</div>
+                                    <div class="day-dot"></div>
+                                </div>
+                                <div class="day-item active"> <!-- Current Day Outline? Image shows outline on Tue -->
+                                    <div class="day-circle outline"></div>
+                                    <div class="day-label">Tue</div>
+                                    <div class="day-dot"></div>
+                                </div>
+                                <div class="day-item">
+                                    <div class="day-circle empty"></div>
+                                    <div class="day-label">Wed</div>
+                                    <div class="day-dot"></div>
+                                </div>
+                                <div class="day-item">
+                                    <div class="day-circle empty"></div>
+                                    <div class="day-label">Thu</div>
+                                    <div class="day-dot"></div>
+                                </div>
+                                <div class="day-item">
+                                    <div class="day-circle empty"></div>
+                                    <div class="day-label">Fri</div>
+                                    <div class="day-dot"></div>
+                                </div>
+                                <div class="day-item">
+                                    <div class="day-circle empty"></div>
+                                    <div class="day-label">Sat</div>
+                                    <div class="day-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Prompt/Schedule Card -->
+                        <div class="prompt-card">
+                            <!-- New Action Button (Top-Right) -->
+                            <div class="prompt-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M6.50959 2C4.01895 2 1.99988 4.01907 1.99988 6.50971V17.4903C1.99988 19.9809 4.01895 22 6.50959 22H11.8499C12.3191 22 12.6994 21.6197 12.6994 21.1505C12.6994 20.6813 12.3191 20.301 11.8499 20.301H6.50959C4.9573 20.301 3.69892 19.0426 3.69892 17.4903V6.50971C3.69892 4.95742 4.9573 3.69904 6.50959 3.69904H17.1902C18.7425 3.69904 20.0008 4.95742 20.0008 6.50971V12C20.0008 12.4692 20.3812 12.8495 20.8504 12.8495C21.3195 12.8495 21.6999 12.4692 21.6999 12V6.50971C21.6999 4.01907 19.6808 2 17.1902 2H6.50959ZM7.00245 11.1503C6.53327 11.1503 6.15293 11.5306 6.15293 11.9998C6.15293 12.469 6.53327 12.8493 7.00245 12.8493H10.0016C10.4708 12.8493 10.8511 12.469 10.8511 11.9998C10.8511 11.5306 10.4708 11.1503 10.0016 11.1503H7.00245ZM6.15293 8.00201C6.15293 7.53283 6.53327 7.15248 7.00245 7.15248H12.9991C13.4683 7.15248 13.8486 7.53283 13.8486 8.00201C13.8486 8.47119 13.4683 8.85153 12.9991 8.85153H7.00245C6.53327 8.85153 6.15293 8.47119 6.15293 8.00201ZM19.4325 13.2912C18.9054 12.7553 18.0508 12.7553 17.5237 13.2912L13.7673 17.1101C13.4779 17.4044 13.3355 17.8162 13.38 18.2297L13.5949 20.2252C13.6508 20.7447 14.0542 21.1549 14.5652 21.2117L16.528 21.4301C16.9348 21.4754 17.3398 21.3306 17.6292 21.0364L21.3856 17.2174C21.9126 16.6815 21.9126 15.8127 21.3856 15.2768L19.4325 13.2912ZM15.0725 18.2059L18.4781 14.7435L19.9571 16.2471L16.5515 19.7095L15.2184 19.5612L15.0725 18.2059Z" fill="#ffffff"></path> </g></svg>
+                            </div>
+
+                            <div class="prompt-icon">
+                                <!-- Calendar Search Icon placeholder -->
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    <circle cx="16" cy="18" r="3"></circle>
+                                    <line x1="18.5" y1="20.5" x2="20" y2="22"></line>
+                                </svg>
+                            </div>
+                            <div class="prompt-text">Let’s talk about tomorrow’s schedule</div>
+                            <div class="pagination-dots">
+                                <span class="dot active"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+
+                            <!-- Edit Overlay -->
+                            <div class="prompt-edit-overlay" style="display: none;">
+                                <div class="prompt-edit-btn-add">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </div>
+                                <div class="prompt-edit-btn-close">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </div>
+                                <div class="prompt-topic-list">
+                                    <!-- Dynamic List of Inputs -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recap Left View -->
+                    <div id="left-view-recap" class="view-item-left">
+                        <div class="left-recap-header">
+                             <div class="live-status-small">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                <span>Paused</span>
+                             </div>
+                             
+                             <div class="mini-player-filename">
+                                 <div class="scrolling-text">Your Session 2026_02_03_vo3_mp3</div>
+                             </div>
+
+                             <div class="write-pause-btn" id="recap-play-btn">
+                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                             </div>
+                        </div>
+
+                        <div class="generating-container">
+                            <div class="gen-title">Now Generating<span class="dot-anim"></span></div>
+                            <div class="gen-card large">
+                                 <div class="gen-info">
+                                     <div class="gen-name">Your Session 2026_02_03_vo1_mp3</div>
+                                     <div class="gen-loader-container">
+                                         <svg class="circular-loader-large" width="120" height="120" viewBox="0 0 120 120">
+                                            <circle class="loader-bg" cx="60" cy="60" r="54"></circle>
+                                            <circle class="loader-progress" cx="60" cy="60" r="54"></circle>
+                                         </svg>
+                                         <div class="gen-percent-text">0%</div>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Discovery Left View (New) -->
+                    <div id="left-view-discovery" class="view-item-left">
+                         <div class="discovery-list-container">
+                             <!-- Card 1 -->
+                             <div class="discovery-card">
+                                 <div class="discovery-card-top">
+                                     <div class="discovery-info-row">
+                                         <span class="discovery-title">John Doe’s Podcast</span>
+                                         <span class="discovery-location">Toronto, Ontario</span>
+                                     </div>
+                                     <div class="discovery-pill">
+                                         <div class="discovery-dot"></div>
+                                         <span>On-Air</span>
+                                     </div>
+                                 </div>
+                                 <div class="discovery-card-bottom">
+                                     <div class="discovery-handle">johndoe.fm</div>
+                                     <div class="discovery-listeners">
+                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                         <span>7</span>
+                                     </div>
+                                 </div>
+                             </div>
+
+                             <!-- Card 2 -->
+                             <div class="discovery-card">
+                                 <div class="discovery-card-top">
+                                     <div class="discovery-info-row">
+                                        <span class="discovery-title">Downtown Yappers</span>
+                                        <span class="discovery-location">Toronto, Ontario</span>
+                                     </div>
+                                     <div class="discovery-pill">
+                                         <div class="discovery-dot"></div>
+                                         <span>On-Air</span>
+                                     </div>
+                                 </div>
+                                 <div class="discovery-card-bottom">
+                                     <div class="discovery-handle">sunflower97.fm</div>
+                                     <div class="discovery-listeners">
+                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                         <span>27</span>
+                                     </div>
+                                 </div>
+                             </div>
+
+                             <!-- Card 3 -->
+                             <div class="discovery-card">
+                                 <div class="discovery-card-top">
+                                     <div class="discovery-info-row">
+                                        <span class="discovery-title">Just Vibing</span>
+                                        <span class="discovery-location">Toronto, Ontario</span>
+                                     </div>
+                                     <div class="discovery-pill">
+                                         <div class="discovery-dot"></div>
+                                         <span>On-Air</span>
+                                     </div>
+                                 </div>
+                                 <div class="discovery-card-bottom">
+                                     <div class="discovery-handle">mac33miles.fm</div>
+                                     <div class="discovery-listeners">
+                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                         <span>3</span>
+                                     </div>
+                                 </div>
+                             </div>
+
+                             <!-- Card 4 -->
+                             <div class="discovery-card">
+                                 <div class="discovery-card-top">
+                                    <div class="discovery-info-row">
+                                        <span class="discovery-title">Open Talk</span>
+                                        <span class="discovery-location">Toronto, Ontario</span>
+                                    </div>
+                                     <div class="discovery-pill">
+                                         <div class="discovery-dot"></div>
+                                         <span>On-Air</span>
+                                     </div>
+                                 </div>
+                                 <div class="discovery-card-bottom">
+                                     <div class="discovery-handle">raysun39.fm</div>
+                                     <div class="discovery-listeners">
+                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                         <span>9</span>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Right Section: Player & Transcript -->
+                <div class="right-section">
+                    <!-- Discovery Right View (New) -->
+                    <div id="view-discovery" class="view-item">
+                        <div id="discovery-map" class="discovery-map-container">
+                            <!-- Leaflet Map attaches here -->
+                        </div>
+                    </div>
+
+                    <!-- Radio View Container -->
+                    <div id="view-radio" class="view-item active">
+                        <!-- Player Card -->
+                        <div class="player-card">
+                            <!-- Radio Tuner Component -->
+                            <div class="radio-tuner-wrapper">
+                                <div class="needle"></div>
+                                <div class="radio-track" id="radio-track"></div>
+                                <div class="fade-overlay-left"></div>
+                                <div class="fade-overlay-right"></div>
+                            </div>
+
+                            <!-- Vertical Genre Tuner -->
+                            <div class="vertical-tuner-wrapper">
+                                <div class="vertical-track" id="vertical-track"></div>
+                                <div class="vertical-guide-line"></div>
+                                <div class="vertical-needle"></div>
+                                <div class="vertical-fade-top"></div>
+                                <div class="vertical-fade-bottom"></div>
+                            </div>
+
+                            <div class="player-buttons">
+                                <button class="control-btn prev">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
+                                </button>
+                                <button class="control-btn play" id="radio-play-btn">
+                                    <div class="play-btn-bg"></div>
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="white" style="position:relative; z-index:2"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <button class="control-btn next">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Transcript Card -->
+                        <div class="transcript-card">
+                            <div class="transcript-content">
+                                <p>[Loading...]</p>
+                                <p class="spacer">&nbsp;</p>
+                                <p>Your podcast is generating...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Write View Container -->
+                    <div id="view-write" class="view-item">
+                        <div class="write-card">
+                            <div class="write-area" contenteditable="true" data-placeholder="Start writing..."></div>
+                            
+                            <!-- Draft Pill Button -->
+                            <div class="draft-pill-btn show-tooltip">
+                                <span class="draft-text" style="pointer-events: none;">Drafts</span>
+                                <div class="draft-tooltip">
+                                    <div class="draft-item-row" id="draft-slot-1">Draft 1: Empty</div>
+                                    <div class="draft-item-row" id="draft-slot-2">Draft 2: Empty</div>
+                                    <div class="draft-item-row" id="draft-slot-3">Draft 3: Empty</div>
+                                </div>
+                            </div>
+
+                            <!-- Enter Recap Button (Hidden by default) -->
+                            <div class="enter-recap-btn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 17L17 7M17 7H8M17 7V16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                            </div>
+
+                            <div class="voice-input-btn" id="voice-input-btn">
+                                <!-- Inactive Icon -->
+                                <svg class="icon-inactive" fill="#000000" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M 36.5429 26.8516 L 36.5429 12.1094 C 36.5429 6.6953 33.0508 2.9219 28.0117 2.9219 C 22.9727 2.9219 19.4805 6.6953 19.4805 12.1094 L 19.4805 26.8516 C 19.4805 32.2422 22.9727 36.0390 28.0117 36.0390 C 33.0508 36.0390 36.5429 32.2422 36.5429 26.8516 Z M 33.0039 26.8516 C 33.0039 30.3203 31.0117 32.5469 28.0117 32.5469 C 25.0117 32.5469 23.0195 30.3203 23.0195 26.8516 L 23.0195 12.1094 C 23.0195 8.6406 25.0117 6.4141 28.0117 6.4141 C 31.0117 6.4141 33.0039 8.6406 33.0039 12.1094 Z M 17.5351 49.5391 C 16.5508 49.5391 15.7773 50.3359 15.7773 51.3203 C 15.7773 52.3047 16.5508 53.0781 17.5351 53.0781 L 38.4883 53.0781 C 39.4727 53.0781 40.2461 52.3047 40.2461 51.3203 C 40.2461 50.3359 39.4727 49.5391 38.4883 49.5391 L 29.7695 49.5391 L 29.7695 44.0781 C 38.7227 43.3281 44.7695 36.9063 44.7695 27.6953 L 44.7695 22.9375 C 44.7695 21.9531 43.9961 21.1797 43.0117 21.1797 C 42.0273 21.1797 41.2305 21.9531 41.2305 22.9375 L 41.2305 27.5547 C 41.2305 35.5469 36.0273 40.8437 28.0117 40.8437 C 19.9961 40.8437 14.7695 35.5469 14.7695 27.5547 L 14.7695 22.9375 C 14.7695 21.9531 13.9961 21.1797 13.0117 21.1797 C 12.0273 21.1797 11.2305 21.9531 11.2305 22.9375 L 11.2305 27.6953 C 11.2305 36.9063 17.3008 43.3281 26.2305 44.0781 L 26.2305 49.5391 Z"></path></g></svg>
+                                <!-- Active Icon -->
+                                <svg class="icon-active" fill="#ffffff" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M 35.1016 28.0000 L 35.1016 11.2656 C 35.1016 6.9297 32.1719 3.7187 28 3.7187 C 23.8281 3.7187 20.8984 6.9297 20.8984 11.2656 L 20.8984 28.0000 C 20.8984 32.3125 23.8281 35.5469 28 35.5469 C 32.1719 35.5469 35.1016 32.3125 35.1016 28.0000 Z M 17.0547 48.7422 C 16.1172 48.7422 15.2969 49.5859 15.2969 50.5234 C 15.2969 51.4609 16.1172 52.2813 17.0547 52.2813 L 38.9453 52.2813 C 39.8828 52.2813 40.7031 51.4609 40.7031 50.5234 C 40.7031 49.5859 39.8828 48.7422 38.9453 48.7422 L 29.7578 48.7422 L 29.7578 43.6094 C 38.2890 42.8594 43.9375 36.5547 43.9375 27.9766 L 43.9375 22.4687 C 43.9375 21.5547 43.1172 20.7578 42.2031 20.7578 C 41.2890 20.7578 40.4922 21.5547 40.4922 22.4687 L 40.4922 27.9766 C 40.4922 35.125 35.3359 40.375 28 40.375 C 20.6641 40.375 15.5078 35.125 15.5078 27.9766 L 15.5078 22.4687 C 15.5078 21.5547 14.7110 20.7578 13.7969 20.7578 C 12.8828 20.7578 12.0625 21.5547 12.0625 22.4687 L 12.0625 27.9766 C 12.0625 36.5547 17.7110 42.8594 26.2188 43.6094 L 26.2188 48.7422 Z"></path></g></svg>
+                            </div>
+                        </div>
+                        <div class="char-count">0/2000</div>
+                    </div>
+
+                    <!-- Recap View Container -->
+                    <div id="view-recap" class="view-item">
+                        <div class="recap-card">
+                            <!-- Story Progress Bars -->
+                            <div class="story-progress-container">
+                                <div class="story-bar active"></div>
+                                <div class="story-bar"></div>
+                                <div class="story-bar"></div>
+                                <div class="story-bar"></div>
+                            </div>
+
+                            <div class="recap-content-inner">
+                                <!-- Main content area (currently empty pink) -->
+                                <div class="recap-spacer"></div>
+
+                                <!-- Bottom Actions -->
+                                <div class="recap-actions">
+                                    <button class="action-btn outline">Add to Calendar</button>
+                                    <button class="action-btn filled">Share</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="session-filename">Your Session 2026_02_03_vo3_mp3</div> -->
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="sidebar-right">
+             <div class="sidebar-top-group">
+                <!-- Star/Recap Button -->
+                <div class="sidebar-btn-star">
+                    <div class="star-btn-circle"></div>
+                    <div class="icon-overlay icon-star">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M6.03954 7.77203C3.57986 8.32856 2.35002 8.60682 2.05742 9.54773C1.76482 10.4886 2.60325 11.4691 4.2801 13.4299L4.71392 13.9372C5.19043 14.4944 5.42868 14.773 5.53586 15.1177C5.64305 15.4624 5.60703 15.8341 5.53498 16.5776L5.4694 17.2544C5.21588 19.8706 5.08912 21.1787 5.85515 21.7602C6.62118 22.3417 7.77268 21.8115 10.0757 20.7512L10.6715 20.4768C11.3259 20.1755 11.6531 20.0248 12 20.0248C12.3469 20.0248 12.6741 20.1755 13.3285 20.4768L13.9243 20.7512C16.2273 21.8115 17.3788 22.3417 18.1449 21.7602C18.9109 21.1787 18.7841 19.8706 18.5306 17.2544M19.7199 13.4299C21.3968 11.4691 22.2352 10.4886 21.9426 9.54773C21.65 8.60682 20.4201 8.32856 17.9605 7.77203L17.3241 7.62805C16.6251 7.4699 16.2757 7.39083 15.9951 7.17781C15.7144 6.96479 15.5345 6.64193 15.1745 5.99623L14.8468 5.40837C13.5802 3.13612 12.9469 2 12 2C11.0531 2 10.4198 3.13613 9.15316 5.40838" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
+                    </div>
+                </div>
+
+                <div class="sidebar-btn-edit">
+                    <!-- Edit Button Background/Circle -->
+                    <div class="edit-btn-circle"></div>
+                    <div class="icon-overlay icon-edit">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M10.9436 1.25H13.0564C14.8942 1.24998 16.3498 1.24997 17.489 1.40314C18.6614 1.56076 19.6104 1.89288 20.3588 2.64124C20.6516 2.93414 20.6516 3.40901 20.3588 3.7019C20.0659 3.9948 19.591 3.9948 19.2981 3.7019C18.8749 3.27869 18.2952 3.02502 17.2892 2.88976C16.2615 2.75159 14.9068 2.75 13 2.75H11C9.09318 2.75 7.73851 2.75159 6.71085 2.88976C5.70476 3.02502 5.12511 3.27869 4.7019 3.7019C4.27869 4.12511 4.02502 4.70476 3.88976 5.71085C3.75159 6.73851 3.75 8.09318 3.75 10V14C3.75 15.9068 3.75159 17.2615 3.88976 18.2892C4.02502 19.2952 4.27869 19.8749 4.7019 20.2981C5.12511 20.7213 5.70476 20.975 6.71085 21.1102C7.73851 21.2484 9.09318 21.25 11 21.25H13C14.9068 21.25 16.2615 21.2484 17.2892 21.1102C18.2952 20.975 18.8749 20.7213 19.2981 20.2981C19.994 19.6022 20.2048 18.5208 20.2414 15.9892C20.2474 15.575 20.588 15.2441 21.0022 15.2501C21.4163 15.2561 21.7472 15.5967 21.7412 16.0108C21.7061 18.4383 21.549 20.1685 20.3588 21.3588C19.6104 22.1071 18.6614 22.4392 17.489 22.5969C16.3498 22.75 14.8942 22.75 13.0564 22.75H10.9436C9.10583 22.75 7.65019 22.75 6.51098 22.5969C5.33856 22.4392 4.38961 22.1071 3.64124 21.3588C2.89288 20.6104 2.56076 19.6614 2.40314 18.489C2.24997 17.3498 2.24998 15.8942 2.25 14.0564V9.94358C2.24998 8.10582 2.24997 6.65019 2.40314 5.51098C2.56076 4.33856 2.89288 3.38961 3.64124 2.64124C4.38961 1.89288 5.33856 1.56076 6.51098 1.40314C7.65019 1.24997 9.10582 1.24998 10.9436 1.25ZM18.1131 7.04556C19.1739 5.98481 20.8937 5.98481 21.9544 7.04556C23.0152 8.1063 23.0152 9.82611 21.9544 10.8869L17.1991 15.6422C16.9404 15.901 16.7654 16.076 16.5693 16.2289C16.3387 16.4088 16.0892 16.563 15.8252 16.6889C15.6007 16.7958 15.3659 16.8741 15.0187 16.9897L12.9351 17.6843C12.4751 17.8376 11.9679 17.7179 11.625 17.375C11.2821 17.0321 11.1624 16.5249 11.3157 16.0649L11.9963 14.0232C12.001 14.0091 12.0056 13.9951 12.0102 13.9813C12.1259 13.6342 12.2042 13.3993 12.3111 13.1748C12.437 12.9108 12.5912 12.6613 12.7711 12.4307C12.924 12.2346 13.099 12.0596 13.3578 11.8009C13.3681 11.7906 13.3785 11.7802 13.3891 11.7696L18.1131 7.04556ZM20.8938 8.10622C20.4188 7.63126 19.6488 7.63126 19.1738 8.10622L18.992 8.288C19.0019 8.32149 19.0132 8.3571 19.0262 8.39452C19.1202 8.66565 19.2988 9.02427 19.6372 9.36276C19.9757 9.70125 20.3343 9.87975 20.6055 9.97382C20.6429 9.9868 20.6785 9.99812 20.712 10.008L20.8938 9.8262C21.3687 9.35124 21.3687 8.58118 20.8938 8.10622ZM19.5664 11.1536C19.2485 10.9866 18.9053 10.7521 18.5766 10.4234C18.2479 10.0947 18.0134 9.75146 17.8464 9.43357L14.4497 12.8303C14.1487 13.1314 14.043 13.2388 13.9538 13.3532C13.841 13.4979 13.7442 13.6545 13.6652 13.8202C13.6028 13.9511 13.5539 14.0936 13.4193 14.4976L13.019 15.6985L13.3015 15.981L14.5024 15.5807C14.9064 15.4461 15.0489 15.3972 15.1798 15.3348C15.3455 15.2558 15.5021 15.159 15.6468 15.0462C15.7612 14.957 15.8686 14.8513 16.1697 14.5503L19.5664 11.1536ZM7.25 9C7.25 8.58579 7.58579 8.25 8 8.25H14.5C14.9142 8.25 15.25 8.58579 15.25 9C15.25 9.41421 14.9142 9.75 14.5 9.75H8C7.58579 9.75 7.25 9.41421 7.25 9ZM7.25 13C7.25 12.5858 7.58579 12.25 8 12.25H10.5C10.9142 12.25 11.25 12.5858 11.25 13C11.25 13.4142 10.9142 13.75 10.5 13.75H8C7.58579 13.75 7.25 13.4142 7.25 13ZM7.25 17C7.25 16.5858 7.58579 16.25 8 16.25H9.5C9.91421 16.25 10.25 16.5858 10.25 17C10.25 17.4142 9.91421 17.75 9.5 17.75H8C7.58579 17.75 7.25 17.4142 7.25 17Z" fill="currentColor"></path> </g></svg>
+                    </div>
+                </div>
+                
+                <div class="sidebar-pill-vertical active">
+                     <div class="icon-overlay icon-radio">
+                         <!-- Radio Icon -->
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M2 14C2 10.2288 2 8.34315 3.17157 7.17157C4.34315 6 6.22876 6 10 6H14C17.7712 6 19.6569 6 20.8284 7.17157C22 8.34315 22 10.2288 22 14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14Z" stroke="currentColor" stroke-width="1.5"></path> <circle cx="8" cy="14" r="3" stroke="currentColor" stroke-width="1.5"></circle> <path d="M13.5 11H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path> <path d="M13.5 14H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path> <path d="M13.5 17H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path> <path d="M6.5 6L15 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
+                     </div>
+                </div>
+             </div>
+
+             <div class="sidebar-user-group">
+                 <img src="blankpfp.jpg" class="user-avatar" alt="User">
+                 <div class="username-label">username.fm</div>
+             </div>
+        </aside>
+    </div>
+    <div id="pricing-modal" class="pricing-modal">
+        <div class="pricing-overlay"></div>
+        <div class="pricing-content">
+            <!-- Free Plan (Active) -->
+            <div class="plan-card active">
+                <div class="plan-pill outlined">Free</div>
+                <div class="plan-details">
+                    <h2>Free Plan</h2>
+                    <p class="plan-quote">"Speak your mind"</p>
+                    <p class="plan-desc">General/Casual Users</p>
+                </div>
+                <div class="plan-btn disabled">Current Plan</div>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="plan-card">
+                <div class="plan-pill filled">Pro</div>
+                <div class="plan-details">
+                    <h2>Pro Plan</h2>
+                    <p class="plan-quote">"Master your mind."</p>
+                    <p class="plan-desc">High-Performance Users</p>
+                </div>
+                <div class="plan-btn">--$/Month</div>
+            </div>
+
+            <!-- Max Plan -->
+            <div class="plan-card">
+                <div class="plan-pill filled">MAX <svg width="16" height="16" viewBox="0 0 24 24" fill="black" style="margin-left:4px"><path d="M12 3v18M8 6v12M4 9v6M16 6v12M20 9v6" stroke="black" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <div class="plan-details">
+                    <h2>Max Plan</h2>
+                    <p class="plan-quote">"Creator Studio"</p>
+                    <p class="plan-desc">Studios and Enterprise Creators</p>
+                </div>
+                <div class="plan-btn">--$/Month</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="script.js"></script>
+</body>
+</html>
+

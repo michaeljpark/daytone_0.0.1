@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daytone.fm - Explore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        /* Web Specific Overrides */
+        .card-content {
+            padding: 30px !important;
+            display: flex !important;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        /* Friend Mode Styles */
+        .friend-mode-container {
+            display: none; /* Hidden by default */
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .friend-mode-container.active {
+            display: flex;
+        }
+
+        /* Top Row: Friends List */
+        .friend-list-row {
+            height: 250px;
+            background-color: #111;
+            border-radius: 24px;
+            padding: 30px 40px; /* Adjusted padding */
+            display: flex;
+            flex-direction: column; /* Stack header and list */
+            gap: 20px;
+        }
+
+        .friend-list-header {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .friend-items-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+        }
+
+        .friend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .friend-avatar-wrapper {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+
+        .friend-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .friend-avatar img {
+            width: 60%;
+            opacity: 0.5;
+        }
+        
+        .friend-avatar.active-user {
+            border: 2px solid white;
+        }
+        /* If the friend is online, the active ring becomes green */
+        .friend-avatar-wrapper:has(.friend-status-dot.online) .friend-avatar.active-user {
+            border-color: #4ADE80;
+        }
+        
+        .friend-avatar.active-user img {
+             opacity: 1;
+        }
+
+        /* Pulse Animation for On-Air (Online) friends */
+        @keyframes pulse-grey {
+            0% {
+                box-shadow: 0 0 0 0 rgba(128, 128, 128, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(128, 128, 128, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(128, 128, 128, 0);
+            }
+        }
+
+        .friend-avatar-wrapper:has(.friend-status-dot.online) .friend-avatar {
+            animation: pulse-grey 2s infinite;
+        }
+
+        .friend-status-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #444; /* Grey default */
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            border: 2px solid #111;
+        }
+        .friend-status-dot.online {
+            background-color: #4ADE80; /* Green */
+        }
+
+        .friend-name {
+            font-size: 16px;
+            color: #666; /* Default Grey for offline */
+            font-weight: 400;
+        }
+        /* Make name white if the friend is online (dot has .online class) */
+        .friend-item:has(.friend-status-dot.online) .friend-name {
+            color: #fff;
+        }
+
+        /* Bottom Row: Split View */
+        .friend-bottom-split {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            min-height: 0; /* Prevent overflow */
+        }
+
+        .friend-player-card {
+            flex: 1;
+            background-color: #0b0b0b; /* Dark card background */
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .friend-station-info {
+            flex: 1;
+            background-color: #0b0b0b;
+            border-radius: 24px;
+            padding: 40px; /* Increased padding */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start; /* Left align */
+            gap: 15px;
+        }
+        
+        .station-info-title {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        
+        .station-info-status {
+            color: #888;
+            font-size: 24px;
+            font-weight: 400;
+        }
+
+        /* Friend Player Styles */
+        .fp-header-synced {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px; /* Spacing below header */
+        }
+
+        /* Override global styles for this container */
+        .friend-player-card .mini-player-filename {
+            flex-grow: 1;
+            width: auto !important; /* Override fixed width from style.css */
+            margin-left: 20px;
+            margin-right: 20px;
+            text-align: left;
+        }
+        
+        .friend-player-card .live-status-small {
+            background-color: #000;
+            border: 1px solid #222;
+        }
+
+        .friend-player-card .write-pause-btn {
+            margin-right: 0 !important; /* Override global margin */
+        }
+        
+        .fp-track-title {
+            color: #888;
+            font-size: 14px;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fp-controls-top {
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        .fp-main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .fp-album-art {
+            width: 140px;
+            height: 140px;
+            background-color: #e6e6e6; /* Light grey circle */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px; 
+        }
+        .fp-album-art svg {
+            width: 70px;
+            height: 70px;
+            fill: #9CA3AF; /* Darker grey icon */
+        }
+
+        .fp-footer-controls {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center alignment for pill and toggle */
+            gap: 16px;
+        }
+
+        .fp-standby-pill {
+            background: #000;
+            padding: 12px 36px;
+            border-radius: 100px;
+            color: #fff;
+            font-size: 26px; /* Larger text */
+            font-weight: 500;
+            border: none; /* Removed border */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .fp-on-air-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #4ADE80;
+            border-radius: 50%;
+            display: none; /* Hidden by default */
+        }
+        .fp-standby-pill.on-air .fp-on-air-dot {
+            display: block;
+        }
+
+        .fp-connectivity-row {
+            display: flex;
+            gap: 12px;
+        }
+        
+        /* Toggle Button Style Refined */
+        .stream-sliding-toggle {
+            position: relative;
+            background: transparent; /* No background track */
+            border-radius: 100px;
+            width: 160px; /* Wider */
+            height: 64px;
+            display: flex; /* Flex to hold options */
+            cursor: pointer;
+        }
+        
+        .toggle-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px; /* Half width */
+            height: 64px;
+            background-color: #333; /* Grey pill */
+            border-radius: 100px;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy spring */
+            z-index: 1;
+        }
+
+        .toggle-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2; /* Above indicator */
+            transition: opacity 0.3s;
+            opacity: 0.2; /* Dim inactive significantly */
+        }
+        
+        .toggle-option svg {
+            width: 32px;
+            height: 32px;
+            fill: #fff;
+            stroke-width: 0;
+        }
+
+        /* Active State Classes */
+        /* Default Off State: Indicator Left, Left Option Opaque */
+        .toggle-option.off { opacity: 1; }
+        .toggle-option.on { opacity: 0.2; }
+
+        /* On State */
+        .stream-sliding-toggle.on-air .toggle-indicator {
+            transform: translateX(80px); /* Slide Right */
+        }
+        .stream-sliding-toggle.on-air .toggle-option.off { opacity: 0.2; }
+        .stream-sliding-toggle.on-air .toggle-option.on { opacity: 1; }
+        
+        .web-split-view {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            gap: 20px;
+        }
+
+        .web-left-list {
+            flex: 1; /* Changed from fixed 380px to flex:1 for 1:1 split */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 100%;
+            padding-right: 5px; /* for scrollbar */
+        }
+
+        .web-right-map {
+            flex: 1;
+            background-color: #0b0b0b;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Card Styles Restyle */
+        .discovery-card {
+            background-color: #202020; /* Lighter gray */
+            border: none; /* No stroke */
+            border-radius: 24px; /* More rounded */
+            padding: 24px 28px; /* Larger padding */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Spread content vertically */
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1; /* Stretch to fill vertical space */
+        }
+        .discovery-card:hover {
+            background-color: #2a2a2a;
+        }
+
+        .discovery-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .discovery-info-col {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .discovery-title {
+            font-size: 20px; /* Increased from 15px */
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .discovery-location {
+            font-size: 15px; /* Increased from 11px */
+            color: #777; /* Slightly lighter for better contrast */
+            font-weight: 400;
+        }
+
+        .discovery-pill {
+            background: #000;
+            border: 1px solid #222;
+            border-radius: 100px;
+            padding: 6px 14px; /* Increased padding */
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Increased gap */
+        }
+        .discovery-dot {
+            width: 8px; /* Boxier/Larger dot */
+            height: 8px;
+            background: #4ADE80; 
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+        }
+        .discovery-pill span {
+            font-size: 12px; /* Increased from 10px */
+            font-weight: 600;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .discovery-card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .discovery-handle {
+            font-size: 16px; /* Increased from 12px */
+            color: #888;
+        }
+        
+        .discovery-listeners {
+            color: #888;
+            font-size: 16px; /* Increased from 12px */
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Map styling */
+        #map {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        @keyframes markerPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+            }
+        }
+        
+        .marker-dot-animated {
+            width: 100%; 
+            height: 100%;
+            background: #4ADE80; 
+            border-radius: 50%; 
+            border: 2px solid #121212;
+            animation: markerPulse 2s infinite;
+        }
+
+        .custom-map-marker div {
+            transition: transform 0.2s;
+        }
+        .custom-map-marker:hover div {
+            transform: scale(1.2);
+        }
+
+        /* Map Overlay Controller */
+        .map-overlay-controller {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px; 
+            height: 140px; /* Approximate height of left cards */
+            background-color: #000000; /* Changed to Black */
+            border-radius: 24px;
+            padding: 24px 28px;
+            z-index: 999;
+            box-shadow: none; /* Removed Shadow */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .controller-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .controller-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .controller-sub {
+            font-size: 16px;
+            color: #888;
+        }
+
+        .controller-btn {
+            width: 64px;
+            height: 64px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .controller-btn:hover {
+            transform: scale(1.05);
+        }
+        .controller-btn svg {
+            fill: #000;
+            stroke: none;
+        }
+
+        /* Scrollbar for left list */
+        .web-left-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .web-left-list::-webkit-scrollbar-thumb {
+            background: #222;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="top-bar">
+            <div class="logo-container">
+                 <img src="https://www.figma.com/api/mcp/asset/eff88ec4-c5c5-4946-b1b7-057a7a8533a1" alt="daytone.fm" class="logo-img">
+            </div>
+            
+            <div class="header-globe-wrapper active" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <!-- Life Ring Icon for Explore Mode -->
+                <svg width="24" height="24" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g stroke-linecap="round" stroke-linejoin="round"><path d="M26.913 25.144c2.064-2.456 3.318-5.654 3.318-9.144s-1.254-6.687-3.336-9.166l0.018 0.022 1.462-1.462c0.226-0.226 0.366-0.539 0.366-0.884 0-0.691-0.56-1.251-1.251-1.251-0.346 0-0.658 0.14-0.885 0.367l-1.46 1.46c-2.454-2.072-5.652-3.331-9.145-3.331s-6.692 1.26-9.167 3.349l0.021-0.017-1.461-1.461c-0.226-0.226-0.539-0.366-0.884-0.366-0.69 0-1.25 0.56-1.25 1.25 0 0.345 0.14 0.658 0.366 0.884l1.461 1.461c-2.072 2.454-3.332 5.653-3.332 9.146s1.259 6.691 3.349 9.166l-0.017-0.021-1.46 1.46c-0.227 0.226-0.367 0.539-0.367 0.885 0 0.691 0.56 1.251 1.251 1.251 0.345 0 0.658-0.14 0.884-0.366v0l1.463-1.462c2.455 2.069 5.652 3.326 9.144 3.326s6.689-1.257 9.165-3.343l-0.021 0.018 1.462 1.462c0.226 0.225 0.538 0.364 0.882 0.364 0.691 0 1.251-0.56 1.251-1.251 0-0.344-0.139-0.656-0.364-0.882l0 0zM25.101 23.332l-5.003-5.003c0.386-0.67 0.614-1.473 0.614-2.329s-0.228-1.659-0.626-2.351l0.012 0.023 5.002-5.003c1.611 1.986 2.587 4.545 2.587 7.332s-0.975 5.345-2.603 7.352l0.017-0.022zM14.422 17.579c-0.404-0.404-0.654-0.962-0.654-1.579 0-1.233 1-2.232 2.233-2.232s2.233 1 2.233 2.232c0 0.616-0.25 1.175-0.654 1.579v0c-0.402 0.407-0.961 0.66-1.579 0.66s-1.176-0.252-1.578-0.66l-0-0zM16 4.255c0.008-0 0.018-0 0.028-0 2.794 0 5.357 0.983 7.365 2.622l-0.021-0.017-5.053 5.054c-0.671-0.366-1.469-0.582-2.318-0.582s-1.648 0.215-2.345 0.595l0.026-0.013-5.054-5.054c1.986-1.622 4.55-2.605 7.343-2.605 0.010 0 0.020 0 0.031 0h-0.002zM4.255 16c-0-0.009-0-0.019-0-0.029 0-2.793 0.983-5.357 2.622-7.364l-0.017 0.021 5.043 5.043c-0.399 0.667-0.636 1.471-0.636 2.33s0.236 1.663 0.647 2.351l-0.012-0.021-5.042 5.041c-1.622-1.986-2.605-4.55-2.605-7.344 0-0.010 0-0.020 0-0.030v0.002zM8.669 25.1l5.003-5.002c0.666 0.398 1.47 0.633 2.328 0.633s1.662-0.235 2.35-0.645l-0.021 0.012 5.003 5.004c-1.986 1.61-4.544 2.586-7.331 2.586s-5.346-0.976-7.354-2.604l0.022 0.017z" fill="#ffffff"></path></g></svg>
+            </div>
+
+            <div class="search-bar">
+                <div class="search-icon-wrapper">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#656565" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <input type="text" placeholder="What station would you like to listen to?">
+            </div>
+
+            <div class="free-btn-wrapper">
+                <div class="free-btn-bg"></div>
+                <span class="free-text">Free</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content-wrapper">
+            <div class="main-card-bg"></div>
+            
+            <div class="card-content">
+                <!-- Map / Explore View (Default) -->
+                <div class="web-split-view" id="mode-explore">
+                    
+                    <!-- Left List (Podcasts) -->
+                    <div class="web-left-list">
+                        <!-- Card 1 -->
+                        <div class="discovery-card" onclick="selectStation('John Doe’s Podcast', 'johndoe.fm', 43.6532, -79.3832)">
+                             <div class="discovery-card-top">
+                                 <div class="discovery-info-col">
+                                     <div class="discovery-title">John Doe’s Podcast</div>
+                                     <div class="discovery-location">Toronto, Ontario</div>
+                                 </div>
+                                 <div class="discovery-pill">
+                                     <div class="discovery-dot"></div>
+                                     <span>On-Air</span>
+                                 </div>
+                             </div>
+                             <div class="discovery-card-bottom">
+                                 <div class="discovery-handle">johndoe.fm</div>
+                                 <div class="discovery-listeners">
+                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                     <span>7</span>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="discovery-card" onclick="selectStation('Downtown Yappers', 'sunflower97.fm', 43.6426, -79.3871)">
+                             <div class="discovery-card-top">
+                                 <div class="discovery-info-col">
+                                     <div class="discovery-title">Downtown Yappers</div>
+                                     <div class="discovery-location">Toronto, Ontario</div>
+                                 </div>
+                                 <div class="discovery-pill">
+                                     <div class="discovery-dot"></div>
+                                     <span>On-Air</span>
+                                 </div>
+                             </div>
+                             <div class="discovery-card-bottom">
+                                 <div class="discovery-handle">sunflower97.fm</div>
+                                 <div class="discovery-listeners">
+                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                     <span>27</span>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="discovery-card" onclick="selectStation('Just Vibing', 'mac33miles.fm', 43.6629, -79.3957)">
+                             <div class="discovery-card-top">
+                                 <div class="discovery-info-col">
+                                     <div class="discovery-title">Just Vibing</div>
+                                     <div class="discovery-location">Toronto, Ontario</div>
+                                 </div>
+                                 <div class="discovery-pill">
+                                     <div class="discovery-dot"></div>
+                                     <span>On-Air</span>
+                                 </div>
+                             </div>
+                             <div class="discovery-card-bottom">
+                                 <div class="discovery-handle">mac33miles.fm</div>
+                                 <div class="discovery-listeners">
+                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                     <span>3</span>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="discovery-card" onclick="selectStation('Open Talk', 'raysun39.fm', 43.6677, -79.3148)">
+                             <div class="discovery-card-top">
+                                 <div class="discovery-info-col">
+                                     <div class="discovery-title">Open Talk</div>
+                                     <div class="discovery-location">Toronto, Ontario</div>
+                                 </div>
+                                 <div class="discovery-pill">
+                                     <div class="discovery-dot"></div>
+                                     <span>On-Air</span>
+                                 </div>
+                             </div>
+                             <div class="discovery-card-bottom">
+                                 <div class="discovery-handle">raysun39.fm</div>
+                                 <div class="discovery-listeners">
+                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                     <span>9</span>
+                                 </div>
+                             </div>
+                        </div>
+
+                    </div>
+                    
+                    <!-- Right Map -->
+                    <div class="web-right-map">
+                        <div id="map"></div>
+                        
+                        <!-- Overlay Controller -->
+                        <div id="map-controller" class="map-overlay-controller">
+                            <div class="controller-info">
+                                <div class="controller-title" id="ctrl-title">Select a Station</div>
+                                <div class="controller-sub" id="ctrl-handle">to start listening</div>
+                            </div>
+                            <div class="controller-btn" id="ctrl-btn">
+                                <!-- Play Icon -->
+                                <svg id="icon-play" width="24" height="24" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                <!-- Pause Icon (Hidden by default) -->
+                                <svg id="icon-pause" width="24" height="24" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Friend Mode View (New) -->
+                <div class="friend-mode-container" id="mode-friend">
+                    
+                    <!-- Top Row: Friends -->
+                    <div class="friend-list-row">
+                        <div class="friend-list-header">My Friends (6)</div>
+                        <div class="friend-items-wrapper">
+                            <!-- Friend 1 (Self/Active) -->
+                            <div class="friend-item">
+                            <div class="friend-avatar-wrapper">
+                                <div class="friend-avatar active-user">
+                                    <!-- Simple User Icon for Avatar -->
+                                    <svg viewBox="0 0 24 24" fill="white" width="40" height="40"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="friend-status-dot"></div>
+                            </div>
+                            <div class="friend-name">username.fm</div>
+                        </div>
+                        
+                        <!-- Friend 2 -->
+                        <div class="friend-item">
+                            <div class="friend-avatar-wrapper">
+                                <div class="friend-avatar">
+                                    <svg viewBox="0 0 24 24" fill="#666" width="40" height="40"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="friend-status-dot online"></div>
+                            </div>
+                            <div class="friend-name">mikep.fm</div>
+                        </div>
+
+                        <!-- Friend 3 -->
+                        <div class="friend-item">
+                            <div class="friend-avatar-wrapper">
+                                <div class="friend-avatar">
+                                    <svg viewBox="0 0 24 24" fill="#666" width="40" height="40"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="friend-status-dot"></div>
+                            </div>
+                            <div class="friend-name">jamiee.fm</div>
+                        </div>
+
+                         <!-- Friend 4 -->
+                         <div class="friend-item">
+                            <div class="friend-avatar-wrapper">
+                                <div class="friend-avatar">
+                                    <svg viewBox="0 0 24 24" fill="#666" width="40" height="40"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="friend-status-dot online"></div>
+                            </div>
+                            <div class="friend-name">rainmnx03.fm</div>
+                        </div>
+
+                        <!-- Friend 5 -->
+                        <div class="friend-item">
+                            <div class="friend-avatar-wrapper">
+                                <div class="friend-avatar">
+                                    <svg viewBox="0 0 24 24" fill="#666" width="40" height="40"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="friend-status-dot online"></div>
+                            </div>
+                            <div class="friend-name">jdynd92.fm</div>
+                        </div>
+
+                        <!-- Friend 6 -->
+                        <div class="friend-item">
+                            <div class="friend-avatar-wrapper">
+                                <div class="friend-avatar">
+                                    <svg viewBox="0 0 24 24" fill="#666" width="40" height="40"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="friend-status-dot"></div>
+                            </div>
+                            <div class="friend-name">danv_23.fm</div>
+                        </div>
+                        
+                        </div> <!-- End wrapper -->
+                    </div>
+
+                    <!-- Bottom Split -->
+                    <div class="friend-bottom-split">
+                        <!-- Player Card -->
+                        <div class="friend-player-card">
+                            
+                            <!-- Header Synced with Index Writing Mode -->
+                            <div class="fp-header-synced">
+                                 <div class="live-status-small">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                    <span>Paused</span>
+                                 </div>
+                                 
+                                 <div class="mini-player-filename">
+                                     <div class="scrolling-text">Your Session 2026_02_03_vo3_mp3</div>
+                                 </div>
+    
+                                 <div class="write-pause-btn" id="friend-play-btn">
+                                     <!-- Play Icon (Initial State) -->
+                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                                 </div>
+                            </div>
+                            
+                            <div class="fp-main-content">
+                                <div class="fp-album-art">
+                                    <!-- Music Note Icon -->
+                                    <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Right Controls Stack -->
+                            <div class="fp-footer-controls">
+                                <div class="fp-standby-pill" id="fp-status-pill">
+                                    <div class="fp-on-air-dot"></div>
+                                    <span id="fp-status-text">Standby</span>
+                                </div>
+                                <div class="fp-connectivity-row">
+                                    <!-- Sliding Toggle With Moving Indicator -->
+                                    <div class="stream-sliding-toggle" id="stream-toggle-btn">
+                                        <div class="toggle-indicator"></div>
+                                        
+                                        <!-- Off Option -->
+                                        <div class="toggle-option off">
+                                            <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Stream_Off" data-name="Stream Off"> <g> <path d="M4.911,4.206c-.45-.45-1.16.26-.71.71l.32.32v.01A10.646,10.646,0,0,0,5.541,19.8c.48.43,1.19-.28.71-.71a9.623,9.623,0,0,1-1.01-13.13l2.27,2.27a6.022,6.022,0,0,0,.61,8.18c.48.44,1.19-.27.71-.7a5.024,5.024,0,0,1-.61-6.77l2.61,2.61a1.13,1.13,0,0,0-.09.45,1.248,1.248,0,0,0,1.25,1.24,1.13,1.13,0,0,0,.45-.09l4.77,4.77.86.86a3.024,3.024,0,0,1-.31.31.355.355,0,0,0-.11.16.406.406,0,0,0-.04.19.381.381,0,0,0,.04.19.386.386,0,0,0,.11.17.5.5,0,0,0,.35.14.585.585,0,0,0,.13-.02.432.432,0,0,0,.22-.12c.11-.1.22-.2.32-.3.1.09.19.19.29.29.45.45,1.16-.26.71-.71Z"></path> <path d="M17.73,4.908a9.624,9.624,0,0,1,2.3,11.1c-.265.582.6,1.09.864.505A10.647,10.647,0,0,0,18.438,4.2c-.475-.433-1.185.272-.708.707Z"></path> <path d="M15.15,8.291a5.016,5.016,0,0,1,1.6,4.572.515.515,0,0,0,.349.615.5.5,0,0,0,.615-.349,6.042,6.042,0,0,0-1.852-5.546c-.476-.431-1.185.274-.708.708Z"></path> </g> </g> </g></svg>
+                                        </div>
+
+                                        <!-- On Option -->
+                                        <div class="toggle-option on">
+                                            <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Stream_On" data-name="Stream On"> <g> <path d="M6.26,19.089A9.625,9.625,0,0,1,6.234,4.911C6.709,4.475,6,3.769,5.527,4.2A10.516,10.516,0,0,0,5.553,19.8c.475.433,1.184-.273.707-.707Z"></path> <path d="M8.84,15.706a5.024,5.024,0,0,1-.014-7.412c.474-.437-.234-1.143-.707-.707a6.028,6.028,0,0,0,.014,8.826c.474.434,1.183-.272.707-.707Z"></path> <circle cx="12" cy="12" r="1.244"></circle> <path d="M17.74,4.911a9.625,9.625,0,0,1,.026,14.178c-.475.436.234,1.142.707.707A10.516,10.516,0,0,0,18.447,4.2c-.475-.433-1.184.273-.707.707Z"></path> <path d="M15.16,8.294a5.024,5.024,0,0,1,.014,7.412c-.474.437.234,1.143.707.707a6.028,6.028,0,0,0-.014-8.826c-.474-.434-1.183.272-.707.707Z"></path> </g> </g> </g></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Station Info -->
+                        <div class="friend-station-info">
+                            <div class="station-info-title">[username’s Station]</div>
+                            <div class="station-info-status">Standby...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+            <!-- Sidebar -->
+            <aside class="sidebar-right">
+                <div class="sidebar-top-group">
+                    <!-- Star/Recap Button -->
+                    <div class="sidebar-btn-star">
+                        <div class="star-btn-circle"></div>
+                        <div class="icon-overlay icon-star">
+                            <svg fill="#ffffff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52.00 52.00" enable-background="new 0 0 52 52" xml:space="preserve" stroke="#ffffff" stroke-width="0.0005200000000000001"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.10400000000000001"></g><g id="SVGRepo_iconCarrier"> <path d="M26,2C12.7,2,2,12.7,2,26s10.7,24,24,24s24-10.7,24-24S39.3,2,26,2z M26,7C26,7,26,7,26,7C26,7,26,7,26,7 C26,7,26,7,26,7z M28,7.1c-0.1,0-0.1,0-0.2,0C27.9,7.1,28,7.1,28,7.1z M26,45C15.5,45,7,36.5,7,26c0-1,0.1-2.1,0.3-3 c1.3,0.2,2.9,0.7,3.7,1.5c1.7,1.8,3.6,3.9,5.4,4.3c0,0-0.2,0.1-0.4,0.4c-0.2,0.3-0.4,0.9-0.4,1.9c0,4.7,4.4,1.9,4.4,6.6 c0,4.7,5.3,6.6,5.3,2.8s3.5-5.6,3.5-8.5s-2.7-2.8-4.4-3.8c-1.8-0.9-2.7-2.4-6.1-1.9c-1.8-1.7-2.8-3.1-2-4.7c0.9-1.7,4.6-2,4.6-4.6 s-2.5-3.1-4.3-3.1c-0.8,0-2.5-0.6-3.9-1.3c1.7-1.7,3.8-3.1,6-4.1c1.6,0.7,4.3,1.8,6.6,1.8c2.7,0,4.1-1.9,3.7-3.1 c4.5,0.7,8.5,3,11.4,6.2c-1.5,0.9-3.5,1.9-7,1.9c-4.6,0-4.6,4.7-1.9,5.6c2.8,0.9,5.6-1.8,6.5,0c0.9,1.8-6.5,1.8-4.6,6.4 c1.9,4.6,3.7-0.1,5.6,4.5c1.9,4.6,5.6-0.7,2.8-4.3c-1.2-1.6-0.9-6.5,1.9-6.5h0.9c0.4,1.6,0.7,3.3,0.7,5C45,36.5,36.5,45,26,45z"></path> </g></svg>
+                        </div>
+                    </div>
+    
+                    <div class="sidebar-btn-edit">
+                        <!-- Edit Button Background/Circle -->
+                        <div class="edit-btn-circle"></div>
+                        <div class="icon-overlay icon-edit">
+                            <svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <style type="text/css"> .st0{fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;} </style> <circle class="st0" cx="16" cy="7" r="3"></circle> <circle class="st0" cx="7.3" cy="22" r="3"></circle> <circle class="st0" cx="24.7" cy="22" r="3"></circle> <path class="st0" d="M22.8,24.3C21,26,18.6,27,16,27c-2.6,0-5-1-6.8-2.7"></path> <path class="st0" d="M19,7.5c4.1,1.3,7,5.1,7,9.5c0,0.7-0.1,1.4-0.2,2.1"></path> <path class="st0" d="M6.2,19.2C6.1,18.5,6,17.8,6,17c0-4.5,2.9-8.3,7-9.5"></path> </g></svg>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-pill-vertical active">
+                         <div class="icon-overlay icon-radio">
+                             <!-- Radio Icon -->
+                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M17.1929 20.542C17.4797 21.0139 18.0999 21.1704 18.5438 20.8418C19.7886 19.9206 20.8279 18.7446 21.5901 17.388C22.5159 15.74 23.0015 13.8813 23 11.9911C22.9985 10.1008 22.5099 8.24291 21.5813 6.59646C20.817 5.24112 19.7757 4.06675 18.5295 3.14756C18.0851 2.81973 17.4651 2.97722 17.179 3.44961C16.8929 3.92199 17.0462 4.53563 17.484 4.87241C18.4384 5.60674 19.2384 6.52748 19.8333 7.5823C20.5924 8.92836 20.9919 10.4473 20.9931 11.9927C20.9944 13.5381 20.5974 15.0577 19.8404 16.405C19.2472 17.4608 18.4487 18.3828 17.4955 19.1187C17.0583 19.4562 16.906 20.07 17.1929 20.542Z" fill="#ffffff"></path> <path d="M15.1784 17.0884C15.471 17.5568 16.0939 17.7048 16.5159 17.3485C17.1624 16.8026 17.7068 16.1422 18.1201 15.3976C18.6959 14.3605 18.9987 13.1941 19 12.0078C19.0013 10.8216 18.7012 9.6545 18.1277 8.61609C17.716 7.87056 17.1732 7.20893 16.5279 6.66161C16.1067 6.30437 15.4834 6.45097 15.1898 6.91872C14.8961 7.38648 15.0461 7.99795 15.4461 8.37868C15.8144 8.7291 16.1285 9.13501 16.3761 9.58341C16.7856 10.325 16.9999 11.1585 16.999 12.0056C16.998 12.8527 16.7818 13.6857 16.3706 14.4264C16.122 14.8742 15.807 15.2794 15.438 15.629C15.0371 16.0088 14.8858 16.62 15.1784 17.0884Z" fill="#ffffff"></path> <path d="M6.80715 3.45801C6.52025 2.98608 5.90008 2.82959 5.45615 3.15815C4.21145 4.07935 3.1721 5.25541 2.40993 6.61198C1.48406 8.25993 0.998473 10.1187 1 12.0089C1.00153 13.8991 1.49013 15.7571 2.41867 17.4035C3.18303 18.7589 4.22428 19.9332 5.47048 20.8524C5.91494 21.1802 6.53486 21.0228 6.82099 20.5504C7.10711 20.078 6.95376 19.4643 6.51604 19.1276C5.56163 18.3932 4.76161 17.4725 4.16673 16.4177C3.40759 15.0716 3.00814 13.5526 3.00689 12.0073C3.00564 10.4619 3.40263 8.94228 4.15958 7.59499C4.75275 6.53921 5.55128 5.61717 6.5045 4.8813C6.94168 4.54381 7.09404 3.92993 6.80715 3.45801Z" fill="#ffffff"></path> <path d="M8.82162 6.91159C8.52904 6.44317 7.90607 6.29518 7.48409 6.65147C6.83758 7.19734 6.29322 7.85776 5.87985 8.60237C5.30409 9.63949 5.00133 10.8059 5.00001 11.9921C4.99868 13.1784 5.29882 14.3455 5.87226 15.3839C6.28396 16.1294 6.82683 16.791 7.47211 17.3384C7.8933 17.6956 8.51659 17.549 8.81023 17.0812C9.10386 16.6135 8.95393 16.002 8.55385 15.6213C8.18562 15.2709 7.87155 14.865 7.62393 14.4166C7.21442 13.675 7.00007 12.8415 7.00102 11.9944C7.00197 11.1473 7.21818 10.3143 7.62936 9.57361C7.87798 9.12576 8.19296 8.72056 8.56198 8.37096C8.96291 7.99113 9.11421 7.38 8.82162 6.91159Z" fill="#ffffff"></path> <path d="M15 12C15 13.6568 13.6569 15 12 15C10.3431 15 9 13.6568 9 12C9 10.3431 10.3431 8.99998 12 8.99998C13.6569 8.99998 15 10.3431 15 12ZM10.9895 12C10.9895 12.5581 11.4419 13.0105 12 13.0105C12.5581 13.0105 13.0105 12.5581 13.0105 12C13.0105 11.4419 12.5581 10.9894 12 10.9894C11.4419 10.9894 10.9895 11.4419 10.9895 12Z" fill="#ffffff"></path> </g></svg>
+                         </div>
+                    </div>
+                 </div>
+    
+                 <div class="sidebar-user-group">
+                     <img src="blankpfp.jpg" class="user-avatar" alt="User">
+                     <div class="username-label">username.fm</div>
+                 </div>
+            </aside>
+    </div>
+
+    <div id="pricing-modal" class="pricing-modal">
+        <div class="pricing-overlay"></div>
+        <div class="pricing-content">
+            <!-- Free Plan (Active) -->
+            <div class="plan-card active">
+                <div class="plan-pill outlined">Free</div>
+                <div class="plan-details">
+                    <h2>Free Plan</h2>
+                    <p class="plan-quote">"Speak your mind"</p>
+                    <p class="plan-desc">General/Casual Users</p>
+                </div>
+                <div class="plan-btn disabled">Current Plan</div>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="plan-card">
+                <div class="plan-pill filled">Pro</div>
+                <div class="plan-details">
+                    <h2>Pro Plan</h2>
+                    <p class="plan-quote">"Master your mind."</p>
+                    <p class="plan-desc">High-Performance Users</p>
+                </div>
+                <div class="plan-btn">--$/Month</div>
+            </div>
+
+            <!-- Max Plan -->
+            <div class="plan-card">
+                <div class="plan-pill filled">MAX <svg width="16" height="16" viewBox="0 0 24 24" fill="black" style="margin-left:4px"><path d="M12 3v18M8 6v12M4 9v6M16 6v12M20 9v6" stroke="black" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <div class="plan-details">
+                    <h2>Max Plan</h2>
+                    <p class="plan-quote">"Creator Studio"</p>
+                    <p class="plan-desc">Studios and Enterprise Creators</p>
+                </div>
+                <div class="plan-btn">--$/Month</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // Init Map
+        let map;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Dark Map Style
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([43.6532, -79.3832], 13);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            // Add Markers
+            const stations = [
+                { lat: 43.6532, lng: -79.3832 },
+                { lat: 43.6426, lng: -79.3871 },
+                { lat: 43.6629, lng: -79.3957 },
+                { lat: 43.6677, lng: -79.3148 }
+            ];
+
+            stations.forEach(st => {
+                 const circleIcon = L.divIcon({
+                    className: 'custom-map-marker',
+                    html: `<div class="marker-dot-animated"></div>`,
+                    iconSize: [16, 16], // Slightly larger to accommodate border/pulse space visually if needed, though dot is same size relative to container
+                    iconAnchor: [8, 8]
+                });
+                L.marker([st.lat, st.lng], { icon: circleIcon }).addTo(map);
+            });
+
+            // Live Listener Count Simulation
+            const listenerCounts = document.querySelectorAll('.discovery-listeners span');
+            listenerCounts.forEach(span => {
+                 // Initial random delay for each
+                 const randomDelay = Math.random() * 2000;
+                 
+                 setTimeout(() => {
+                      simulateListeners(span);
+                 }, randomDelay);
+            });
+
+            function simulateListeners(element) {
+                 const initialValue = parseInt(element.textContent);
+                 // Random interval between 2s and 6s
+                 const nextInterval = Math.floor(Math.random() * 4000) + 2000;
+
+                 setInterval(() => {
+                     // 1 step up or down
+                     const change = Math.random() < 0.5 ? -1 : 1;
+                     
+                     let current = parseInt(element.textContent);
+                     let newValue = current + change;
+                     
+                     // Constrain within -2 to +5 of initial value
+                     const minVal = Math.max(0, initialValue - 2);
+                     const maxVal = initialValue + 5;
+
+                     if (newValue >= minVal && newValue <= maxVal) {
+                         element.textContent = newValue;
+                     }
+                 }, nextInterval);
+            }
+        });
+
+        // Controller Logic
+        let isPlaying = false;
+        
+        // Select Station Function
+        function selectStation(title, handle, lat, lng) {
+            // Update Map
+            map.flyTo([lat, lng], 15, {
+                animate: true,
+                duration: 1.5
+            });
+
+            // Update Controller Text
+            document.getElementById('ctrl-title').textContent = title;
+            document.getElementById('ctrl-handle').textContent = handle;
+            
+            // Auto Play
+            isPlaying = true;
+            updatePlayButton();
+        }
+
+        // Play Button Click
+        document.getElementById('ctrl-btn').addEventListener('click', () => {
+             // Check if no station is selected
+             const currentTitle = document.getElementById('ctrl-title').textContent;
+             if(currentTitle === 'Select a Station') {
+                 // Randomly pick a station card
+                 const cards = document.querySelectorAll('.discovery-card');
+                 if(cards.length > 0) {
+                     const randomIndex = Math.floor(Math.random() * cards.length);
+                     cards[randomIndex].click();
+                     return; // selectStation handles the rest
+                 }
+             }
+
+             // Toggle state
+             isPlaying = !isPlaying;
+             updatePlayButton();
+        });
+
+        function updatePlayButton() {
+            const iconPlay = document.getElementById('icon-play');
+            const iconPause = document.getElementById('icon-pause');
+            
+            if(isPlaying) {
+                iconPlay.style.display = 'none';
+                iconPause.style.display = 'block';
+            } else {
+                iconPlay.style.display = 'block';
+                iconPause.style.display = 'none';
+            }
+        }
+
+        /* 
+         * Logic to toggle Friend Mode 
+         */
+        const btnStar = document.querySelector('.sidebar-btn-star'); // Top
+        const btnEdit = document.querySelector('.sidebar-btn-edit'); // Mid (Friend Mode)
+        const btnRadio = document.querySelector('.sidebar-pill-vertical'); // Bottom (Explore Mode)
+
+        const viewExplore = document.getElementById('mode-explore');
+        const viewFriend = document.getElementById('mode-friend');
+
+        // Go to Friend Mode (Mid)
+        btnEdit.addEventListener('click', () => {
+            if(btnEdit.classList.contains('active')) return;
+
+            // Update Sidebar: Expand Mid, Shrink Bottom
+            btnRadio.classList.remove('active');
+            btnEdit.classList.add('active');
+
+            // Switch View
+            viewExplore.style.display = 'none';
+            viewFriend.classList.add('active');
+        });
+
+        // Go to Explore Mode (Bottom)
+        btnRadio.addEventListener('click', () => {
+            if(btnRadio.classList.contains('active')) return;
+
+            // Update Sidebar: Expand Bottom, Shrink Mid
+            btnEdit.classList.remove('active');
+            btnRadio.classList.add('active');
+
+            // Switch View
+            viewFriend.classList.remove('active');
+            viewExplore.style.display = 'flex'; // Restore Split View Flex
+        });
+
+        // --- Friend Mode Player Logic (Synced with Index) ---
+        let isFriendPlaying = localStorage.getItem('daytone_isPlaying') === 'true';
+        
+        // Initial Sync
+        document.addEventListener('DOMContentLoaded', () => {
+            updateFriendPlayerUI();
+        });
+
+        // Listen for Storage Changes
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'daytone_isPlaying') {
+                isFriendPlaying = (e.newValue === 'true');
+                updateFriendPlayerUI();
+            }
+        });
+
+        // Toggle Button
+        const friendPlayBtn = document.getElementById('friend-play-btn');
+        if(friendPlayBtn) {
+            friendPlayBtn.addEventListener('click', () => {
+                isFriendPlaying = !isFriendPlaying;
+                localStorage.setItem('daytone_isPlaying', isFriendPlaying);
+                updateFriendPlayerUI();
+            });
+        }
+
+        function updateFriendPlayerUI() {
+            const btn = document.getElementById('friend-play-btn');
+            const statusBox = document.querySelector('.friend-player-card .live-status-small');
+            const marqueeTextContainer = document.querySelector('.friend-player-card .mini-player-filename');
+
+            if (isFriendPlaying) {
+                // Playing State
+                if(btn) btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; // Pause Icon
+                
+                if(statusBox) {
+                    statusBox.innerHTML = '<div class="red-dot-live"></div><span>Live</span>';
+                }
+
+                if(marqueeTextContainer) marqueeTextContainer.classList.add('playing');
+
+            } else {
+                // Paused State
+                if(btn) btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>'; // Play Icon
+                
+                if(statusBox) {
+                     statusBox.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg><span>Paused</span>';
+                }
+
+                if(marqueeTextContainer) marqueeTextContainer.classList.remove('playing');
+            }
+        }
+
+        /*
+         * Stream Toggle Logic
+         */
+        const streamBtn = document.getElementById('stream-toggle-btn');
+        const statusPill = document.getElementById('fp-status-pill');
+        const statusText = document.getElementById('fp-status-text');
+        const myAvatarDot = document.querySelector('.active-user + .friend-status-dot');
+        let isStreamOn = false;
+
+        if(streamBtn) {
+            streamBtn.addEventListener('click', () => {
+                isStreamOn = !isStreamOn;
+                updateStreamUI();
+            });
+        }
+
+        function updateStreamUI() {
+            if (isStreamOn) {
+                // Set ON state
+                streamBtn.classList.add('on-air');
+                statusText.textContent = 'On-Air';
+                statusPill.classList.add('on-air');
+                
+                if(myAvatarDot) myAvatarDot.classList.add('online');
+            } else {
+                // Set OFF state
+                streamBtn.classList.remove('on-air');
+                statusText.textContent = 'Standby';
+                statusPill.classList.remove('on-air');
+                
+                if(myAvatarDot) myAvatarDot.classList.remove('online');
+            }
+        }
+
+        /*
+         * Friend Selection Logic
+         */
+        const friendItems = document.querySelectorAll('.friend-item');
+        const stationTitle = document.querySelector('.station-info-title');
+        const stationStatus = document.querySelector('.station-info-status');
+
+        friendItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // 1. Remove active stroke from all
+                document.querySelectorAll('.friend-avatar').forEach(av => av.classList.remove('active-user'));
+                
+                // 2. Add active stroke to clicked
+                const avatar = item.querySelector('.friend-avatar');
+                if(avatar) avatar.classList.add('active-user');
+
+                // 3. Update Station Name
+                const nameEl = item.querySelector('.friend-name');
+                if(nameEl && stationTitle) {
+                    stationTitle.textContent = nameEl.textContent.trim() + "'s Station";
+                }
+
+                // 4. Update Status based on Online Dot
+                const dot = item.querySelector('.friend-status-dot');
+                if(stationStatus) {
+                    if (dot && dot.classList.contains('online')) {
+                        stationStatus.textContent = "Loading...";
+                    } else {
+                        stationStatus.textContent = "Standby...";
+                    }
+                }
+            });
+        });
+
+        /* --- Session Name Logic --- */
+        document.addEventListener('DOMContentLoaded', () => {
+             updateSessionName();
+        });
+
+        function updateSessionName() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const vo = Math.floor(Math.random() * 24) + 1;
+            const sessionName = `Your Session ${year}_${month}_${day}_vo${vo}_mp3`;
+            
+            document.querySelectorAll('.scrolling-text').forEach(el => {
+                el.textContent = sessionName;
+            });
+        }
+
+        /* --- Pricing Modal --- */
+        const freeBtnWrapper = document.querySelector('.free-btn-wrapper');
+        const pricingModal = document.getElementById('pricing-modal');
+
+        if(freeBtnWrapper && pricingModal) {
+            freeBtnWrapper.addEventListener('click', () => {
+                pricingModal.style.display = 'flex';
+                // Trigger reflow
+                void pricingModal.offsetWidth;
+                pricingModal.classList.add('visible');
+            });
+
+            // Close when clicking overlay
+            pricingModal.querySelector('.pricing-overlay').addEventListener('click', () => {
+                closePricingByOverlay();
+            });
+        }
+
+        function closePricingByOverlay() {
+            if(!pricingModal) return;
+            pricingModal.classList.remove('visible');
+            setTimeout(() => {
+                pricingModal.style.display = 'none';
+            }, 300); // 0.3s transition
+        }
+    </script>
+</body>
+</html>
