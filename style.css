@@ -1,0 +1,2479 @@
+:root {
+    --bg-app: #121212;
+    --bg-card: #181818;
+    --bg-subcard: #101010;
+    --font-family: "Space Grotesk", sans-serif;
+    --text-white: #FFFFFF;
+    --text-grey: #656565;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-app);
+    font-family: var(--font-family);
+    color: var(--text-white);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    display: flex; /* Flexbox centering */
+    justify-content: center;
+    align-items: center;
+}
+
+.app-container {
+    width: 1920px; /* Base design width */
+    height: 1080px; /* Base design height */
+    position: relative; /* Changed from absolute */
+    transform: scale(0.65); /* Slightly more zoomed out */
+    transform-origin: center center;
+    /* Remove manual positioning to let Flexbox handle centering */
+    top: auto;
+    left: auto;
+    flex-shrink: 0;
+    overflow: visible; /* Ensure outside elements are visible */
+}
+
+/* Header */
+.top-bar {
+    position: absolute;
+    top: 80px;
+    left: 91px;
+    width: 1749px; /* Extended to match sidebar right edge (1840px global) */
+    height: 90px;
+    display: flex;
+    align-items: center;
+}
+
+.logo-container {
+    width: 186px;
+    height: 61px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.header-globe-wrapper {
+    position: absolute;
+    left: 438px; /* Adjusted to center the 40px circle at the same point (458px center) */
+    top: 11px;   /* Centered vertically on search bar height (7 + (48-40)/2) */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #A0A0A0; /* Bright Grey default */
+    background-color: transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.header-globe-wrapper:hover {
+    color: #FFFFFF;
+    background-color: #2A2A2A; /* Match search bar/sidebar active grey */
+}
+.header-globe-wrapper svg {
+    width: 24px;
+    height: 24px;
+}
+.header-globe-wrapper svg path {
+    stroke: currentColor;
+}
+
+.search-bar {
+    position: absolute;
+    left: 490px; /* 579 - 91 roughly */
+    top: 7px;
+    width: 761px;
+    height: 48px;
+    background-color: #292929;
+    border-radius: 950px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+}
+
+.search-icon-wrapper {
+    width: 23px;
+    height: 23px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.search-icon-wrapper img {
+    width: 100%;
+    height: 100%;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    font-family: var(--font-family);
+    font-size: 22.84px;
+    color: var(--text-white);
+    width: 100%;
+    outline: none;
+    letter-spacing: -1.14px;
+}
+.search-bar input::placeholder {
+    color: var(--text-grey);
+}
+
+.free-btn-wrapper {
+    position: absolute;
+    right: 0; /* Aligned to the new extended width */
+    top: 7px;
+    width: 90px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.free-btn-bg {
+    position: absolute;
+    width: 90px;
+    height: 46px;
+    background-color: transparent;
+    border: 1px solid white;
+    border-radius: 950px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    box-sizing: border-box; /* Ensure border is inside */
+}
+
+.free-btn-wrapper:hover .free-btn-bg {
+    background-color: white;
+    border-color: white;
+}
+
+.free-text {
+    position: relative;
+    color: white;
+    font-size: 26.65px;
+    font-weight: 400;
+    letter-spacing: -1.33px;
+    transition: color 0.3s ease;
+}
+
+.free-btn-wrapper:hover .free-text {
+    color: black;
+}
+
+/* Main Content */
+.main-content-wrapper {
+    position: absolute;
+    left: 91px;
+    top: 162px;
+    width: 1668px;
+    height: 831px;
+}
+
+.main-card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-card);
+    border-radius: 57px;
+}
+
+.card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.left-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 919px;
+    height: 100%;
+}
+
+
+.live-status {
+    position: absolute;
+    /* Global Left 146px. Wrapper Left 91px. Relative Left = 55px. */
+    left: 55px; 
+    top: 36px;
+    width: auto;
+    min-width: 125px; /* Moved min-width here for flex container logic */
+    height: 46px;
+    display: flex;
+    align-items: center;
+}
+
+.live-pill-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%; /* Fill parent */
+    background-color: black;
+    border-radius: 950px;
+    transition: width 0.3s ease;
+}
+
+.live-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Changed from center to flex-start */
+    gap: 8px; /* Reduced gap slightly */
+    padding-left: 11px; /* Optical center alignment: (46/2) - (24/2) = 11px */
+    padding-right: 20px; 
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.live-text {
+    font-size: 24px; /* Reduced from 30.45px */
+    letter-spacing: -1.2px;
+    white-space: nowrap;
+}
+
+.red-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+@keyframes breathGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 69, 58, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 12px 2px rgba(255, 69, 58, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 69, 58, 0.2);
+    }
+}
+
+.live-status.playing .red-dot {
+    animation: breathGlow 2s ease-in-out infinite;
+}
+
+.album-container {
+    position: absolute;
+    left: 118px; /* 209 - 91 */
+    top: 113px; /* 275 - 162 */
+    width: 571px;
+    height: 571px;
+}
+
+.album-art {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0px 4px 4px rgba(0,0,0,0.25);
+    animation: rotateAlbum 20s linear infinite;
+    animation-play-state: paused;
+}
+
+.album-art.playing {
+    animation-play-state: running;
+}
+
+@keyframes rotateAlbum {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.track-info {
+    position: absolute;
+    /* Reduced width to 75% of 571px (~428px) and re-centered */
+    /* Previous Left: 118px. Center: 403.5px. New Width: 428px. New Left: 403.5 - 214 = 189.5px */
+    left: 190px; 
+    width: 428px;
+    top: 724px;
+    display: flex;
+    justify-content: center;
+    font-size: 22.84px;
+    letter-spacing: -1.14px;
+    text-align: center;
+    color: var(--text-white);
+}
+
+.session-filename {
+    position: absolute;
+    bottom: 50px;
+    left: 400px; /* Approximate center of left section */
+    transform: translateX(-50%);
+    font-size: 22.84px;
+    letter-spacing: -1.14px;
+    text-align: center;
+    width: 500px;
+}
+
+
+/* Right Section */
+.right-section {
+    position: absolute;
+    left: 845px; /* Shifted from 828px to balance columns */
+    top: 36px; /* 198 - 162 */
+    width: 806px;
+    height: auto;
+}
+
+.player-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 806px;
+    height: 279px;
+    background-color: var(--bg-subcard);
+    border-radius: 29px;
+    overflow: hidden;
+}
+
+.waveform-container {
+    position: absolute;
+    left: 17px; /* 936 - 919 */
+    top: 31px; /* 229 - 198 */
+    width: 475px;
+    height: 217px;
+    /* This contains the waveform image */
+    overflow: hidden;
+}
+.waveform-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+.player-overlay-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.productivity-marker {
+    position: absolute;
+    left: 200px; /* Tuned */
+    top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.productivity-marker span {
+    font-size: 18px; /* Guessed, Figma didn't label marker text explicitly in snippet but visually present */
+    color: white;
+    margin-bottom: 5px;
+}
+.stick {
+    width: 2px;
+    height: 40px;
+    background: white;
+}
+
+.your-music-label {
+    position: absolute;
+    right: 60px;
+    top: 120px;
+    font-size: 26.65px;
+    letter-spacing: -1.33px;
+}
+
+.player-buttons {
+    position: absolute;
+    bottom: 40px;
+    left: 244px; /* Center of Tuner (17px + 453px/2) */
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    z-index: 30;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.control-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Play/Pause Button Logic */
+#radio-play-btn {
+    width: 48px;
+    height: 48px;
+    position: relative;
+    border-radius: 16px;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.play-btn-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 48px;
+    background-color: #303030;
+    border-radius: 16px;
+    z-index: 1;
+    transition: background-color 0.3s;
+}
+#radio-play-btn svg {
+    width: 24px;
+    height: 24px;
+}
+#radio-play-btn.playing .play-btn-bg {
+    background-color: #FF453A;
+    box-shadow: 0 4px 20px rgba(255, 69, 58, 0.4);
+}
+#radio-play-btn:hover .play-btn-bg {
+    background-color: #404040;
+}
+#radio-play-btn.playing:hover .play-btn-bg {
+    background-color: #FF554A;
+}
+
+.transcript-card {
+    position: absolute;
+    top: 300px; /* 498 - 198 (start of player) = 300 diff from player top? No. Player top 198. Transcript top 498. Diff is 300. */
+    left: 0;
+    width: 806px;
+    height: 425px;
+    background-color: var(--bg-subcard);
+    border-radius: 29px;
+    padding: 40px 60px;
+    overflow-y: auto;
+}
+
+.transcript-content p {
+    font-size: 30.45px;
+    line-height: 1.4;
+    letter-spacing: -1.52px;
+    margin-bottom: 0;
+}
+.spacer {
+    height: 20px;
+}
+
+
+/* Sidebar */
+.sidebar-right {
+    position: absolute;
+    /* Use fixed right positioning relative to screen or container? 
+       If container relative, 1794px is fine.
+       But if user wants them "on the right", maybe pin them to the right edge if visually clipped?
+       Given strict adherence: */
+    left: 0; 
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; 
+}
+
+.sidebar-top-group {
+    position: absolute;
+    left: 1794px; /* Exact Figma Coordinate */
+    top: 399px;   /* Exact Figma Coordinate */
+    width: 46px;  /* Width of elements */
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar-btn-edit {
+    width: 46px;
+    height: 46px; /* Default Circle */
+    position: relative;
+    margin-bottom: 40px; 
+    cursor: pointer;
+    color: #656565; 
+    background-color: transparent; /* Reset */
+    border-radius: 950px; /* Always pill-compatible radius */
+    transition: height 0.4s ease, color 0.3s ease, background-color 0.3s ease;
+    display: flex; /* Flex to center icon if expanding */
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar-btn-edit.active {
+    color: #FFFFFF;
+    height: 190px; /* Expand to Pill */
+    background-color: #2A2A2A; /* Add background when active (as pill) */
+}
+
+.edit-btn-circle {
+    /* Deprecate this inner div or make it fill? */
+    /* If we use the parent as the shape, we can hide this or make it 100% */
+    width: 100%;
+    height: 100%;
+    background-color: #2A2A2A;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    /* Hide the inner circle bg if the parent handles bg, OR: */
+    /* Actually better to use the parent for structure. */
+    opacity: 0; /* Hide old circle if we style parent */
+    /* Wait, the original design had a separate circle div. Let's just style the parent to be safe. */
+}
+/* Re-style parent properly ignoring inner div for background if active */
+.sidebar-btn-edit.active .edit-btn-circle {
+    opacity: 0;
+}
+.sidebar-btn-edit:not(.active) .edit-btn-circle {
+    opacity: 1; /* Keep original look */
+    border-radius: 50%;
+}
+
+.icon-edit {
+    position: absolute; /* Keep absolute centering */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.sidebar-pill-vertical {
+    width: 46px;
+    height: 46px; /* Base size Circle (46px) */
+    background-color: #2A2A2A;
+    border-radius: 950px;
+    position: relative;
+    color: #656565; 
+    cursor: pointer;
+    transition: height 0.4s ease, color 0.3s ease;
+}
+
+.sidebar-pill-vertical.active {
+    color: #FFFFFF;
+    height: 190px; /* Active Pill */
+}
+
+.icon-radio {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar-user-group {
+    position: absolute;
+    left: 1773px;
+    top: 923px;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Right align children */
+}
+
+.user-avatar {
+    width: 67px;
+    height: 67px;
+    border-radius: 50%;
+}
+
+.username-label {
+    position: absolute;
+    top: 75px; 
+    right: 0; /* Align right matching the avatar's right edge (since flex-end) */
+    transform: none; /* Remove centering transform */
+    white-space: nowrap;
+    font-size: 24px;
+    letter-spacing: -1.2px;
+}
+
+/* --- Radio Tuner Component --- */
+.radio-tuner-wrapper {
+    position: absolute;
+    left: 17px;
+    top: 31px;
+    width: 453px;
+    height: 217px;
+    overflow: hidden;
+    cursor: grab;
+    z-index: 10;
+}
+
+.radio-tuner-wrapper:active {
+    cursor: grabbing;
+}
+
+.radio-track {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: absolute;
+    left: 50%; 
+    will-change: transform;
+}
+
+.channel-item {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px; 
+    font-weight: 400;
+    letter-spacing: -1px;
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.3s ease, font-size 0.3s ease;
+    white-space: nowrap;
+    text-align: center;
+    position: relative;
+    box-sizing: border-box; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: center; 
+    height: 100%;
+    padding-top: 50px; 
+}
+
+.channel-item .text-label {
+    height: 24px; 
+    display: flex;
+    align-items: flex-end; 
+    justify-content: center;
+    margin-bottom: 12px; 
+    order: 1;
+}
+
+.channel-item .tick-mark-wrapper {
+    order: 2;
+    display: flex;
+    justify-content: center; 
+    height: 30px; 
+    position: relative;
+    width: 100%;
+}
+
+.tick-unit {
+    width: 11px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.major-tick {
+    width: 2px;
+    height: 30px;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: background-color 0.3s;
+}
+
+.minor-tick {
+    width: 2px;
+    height: 2px; 
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.channel-item.active .text-label {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.channel-item.active .major-tick {
+    background-color: #ffffff; 
+}
+
+.needle {
+    position: absolute;
+    left: 50%;
+    top: 86px; 
+    width: 2px;
+    height: 30px; 
+    transform: translateX(-50%);
+    background-color: #ffffff; 
+    pointer-events: none;
+    z-index: 20;
+    opacity: 1;
+    border-radius: 2px;
+}
+
+.fade-overlay-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 100%;
+    background: linear-gradient(to right, var(--bg-subcard), transparent);
+    pointer-events: none;
+    z-index: 15;
+}
+
+.fade-overlay-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 100%;
+    background: linear-gradient(to left, var(--bg-subcard), transparent);
+    pointer-events: none;
+    z-index: 15;
+}
+
+/* --- Vertical Genre Tuner --- */
+.vertical-tuner-wrapper {
+    position: absolute;
+    right: 40px; /* Adjusted from 60px to give space */
+    top: 31px;
+    width: 250px;
+    height: 217px;
+    overflow: hidden;
+    cursor: grab;
+    z-index: 10;
+}
+
+.vertical-tuner-wrapper:active {
+    cursor: grabbing;
+}
+
+.vertical-track {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align text to right near the line */
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    /* right: 20px; Space for the line -- MOVED TO GENRE LABEL */
+    right: 0;
+    will-change: transform;
+}
+
+.vertical-item {
+    height: 60px; /* Space between items */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    opacity: 0.4;
+    transition: opacity 0.3s, transform 0.3s;
+    padding-right: 35px; /* Add padding to push text away from the line */
+}
+
+.vertical-item.active {
+    opacity: 1;
+}
+
+.vertical-item .genre-label {
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -1px;
+    color: white;
+    /* margin-right: 15px; */
+    white-space: nowrap;
+}
+
+.vertical-item.active .genre-label {
+    font-size: 26.65px; /* Match Your Music size */
+    font-weight: 500;
+}
+
+.vertical-guide-line {
+    position: absolute;
+    top: 0;
+    right: 20px; /* Move line in a bit */
+    width: 2px;
+    height: 100%;
+    /* Dotted line generator */
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.3) 1px, transparent 1px);
+    background-size: 2px 10px; /* 1px dot every 10px */
+    background-repeat: repeat-y;
+    pointer-events: none;
+}
+
+.vertical-needle {
+    position: absolute;
+    top: 50%;
+    right: 15px; /* Center over line (20px - (12-2)/2 ...ish) */
+    width: 12px;
+    height: 2px;
+    background-color: white;
+    transform: translateY(-50%);
+    z-index: 20;
+    pointer-events: none;
+}
+
+.vertical-fade-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--bg-subcard), transparent);
+    pointer-events: none;
+    z-index: 15;
+}
+
+.vertical-fade-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to top, var(--bg-subcard), transparent);
+    pointer-events: none;
+    z-index: 15;
+}
+
+/* --- View Switching --- */
+.view-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.view-item.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* Push Effect Directions (Vertical) */
+/* When Write is Active (Top), Radio (Bottom) is pushed Down */
+/* When Radio is Active (Bottom), Write (Top) is pushed Up */
+
+#view-radio {
+    transform: translateY(100px); /* Sits below by default when hidden */
+}
+#view-radio.active {
+    transform: translateY(0);
+}
+
+#view-write {
+    transform: translateY(-100px); /* Sits above by default when hidden */
+}
+#view-write.active {
+    transform: translateY(0);
+}
+
+/* Left Section Vertical Slide (Matches Radio) */
+.left-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 919px;
+    height: 100%;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
+    transform: translateY(0);
+}
+
+.left-section.content-hidden {
+    opacity: 0;
+    transform: translateY(100px); /* Slides down with Radio */
+    visibility: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
+    pointer-events: none;
+}
+
+
+/* Write View Specifics */
+.write-card {
+    position: relative;
+    width: 806px;
+    height: 725px; /* Matches total height of Radio + Transcript + Gap */
+    background-color: var(--bg-subcard);
+    border-radius: 29px;
+    padding: 40px 60px;
+    box-sizing: border-box;
+}
+
+/* Write Area Styles */
+.write-area {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    resize: none;
+    color: var(--text-white);
+    font-family: var(--font-family);
+    font-size: 24px;
+    line-height: 1.5;
+    outline: none;
+    overflow-y: auto; /* Allow scrolling for div */
+    white-space: pre-wrap; /* Preserve whitespace */
+    word-break: break-word;
+}
+
+.write-area:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-grey);
+    cursor: text;
+}
+
+/* Interim Speech Text (Gray) */
+.interim-word {
+    color: #888888; /* Gray color for live speech */
+}
+
+/* Voice Input Floating Button */
+.voice-input-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 100px;
+    height: 100px;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 20;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.voice-input-btn:hover {
+    transform: scale(1.05);
+    background-color: #f0f0f0;
+}
+
+.voice-input-btn:active {
+    transform: scale(0.95);
+}
+
+.voice-input-btn.recording {
+    background-color: #FF3B30; /* Red color */
+}
+
+/* Icon Toggling Logic */
+.voice-input-btn svg {
+    width: 48px;
+    height: 48px;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+/* Default State: Show Inactive, Hide Active */
+.voice-input-btn .icon-inactive {
+    display: block;
+}
+.voice-input-btn .icon-active {
+    display: none;
+}
+
+/* Recording State: Hide Inactive, Show Active */
+.voice-input-btn.recording .icon-inactive {
+    display: none;
+}
+.voice-input-btn.recording .icon-active {
+    display: block;
+}
+
+/* --- Left Section Views --- */
+
+/* Common Transition for Left Views */
+.view-item-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    /* Slide Down/Up logic matches the Right Section logic */
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s 0.4s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.view-item-left.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* Specific Transform Directions for Left Views */
+/* #left-view-radio needs to behave like #view-radio (Radio controls) */
+#left-view-radio {
+    transform: translateY(100px); /* Down when hidden */
+}
+#left-view-radio.active {
+    transform: translateY(0);
+}
+
+/* #left-view-write needs to behave like #view-write (Top) */
+#left-view-write {
+    transform: translateY(-100px); /* Up when hidden */
+}
+#left-view-write.active {
+    transform: translateY(0);
+}
+
+/* Remove the previous .left-section.content-hidden styling as we are using internal views now */
+.left-section.content-hidden {
+    opacity: 1; 
+    transform: none;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* --- Left View WRITE Specifics --- */
+.left-write-header, .left-recap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-left: 17px;  /* Match Content Margin */
+    width: 806px;       /* Match Content Width */
+    padding-top: 40px; 
+    padding-left: 0;    /* Reset internal padding */
+    padding-right: 0; 
+}
+
+
+
+
+/* Reusing spacing from original but tailored */
+.live-status-small {
+    display: flex;
+    align-items: center;
+    background-color: #101010; /* Darker bg for pill in image? Looks like simple black pill */
+    padding: 8px 16px; 
+    border-radius: 950px;
+    gap: 10px;
+}
+.red-dot-live {
+    width: 12px;
+    height: 12px;
+    background-color: #FF453A;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 69, 58, 0.6);
+}
+.live-status-small span {
+    font-size: 20px;
+    color: white;
+}
+.write-pause-btn {
+    cursor: pointer;
+    margin-right: 50px;
+}
+
+/* Weekly Card */
+.weekly-card {
+    width: 806px; /* Expanded to match Right Section Card Width */
+    height: 300px; /* Slightly Taller for balance */
+    background-color: var(--bg-subcard); /* #101010 */
+    border-radius: 29px;
+    padding: 30px;
+    margin-left: 17px; /* Matching Right Margin */
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.weekly-card .card-title {
+    font-size: 24px; /* Increased from 18px */
+    color: white;
+    margin-bottom: 35px; /* Increased spacing */
+    text-align: center;
+}
+
+.week-days-row {
+    display: flex;
+    gap: 30px; /* Increased gap from 15px */
+}
+
+.day-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px; /* Increased gap between circle and text */
+    opacity: 0.3; 
+}
+.day-item.active {
+    opacity: 1; 
+}
+
+.day-circle {
+    width: 48px; /* Increased to 48px */
+    height: 48px;
+    border-radius: 50%;
+    background-color: white;
+}
+.day-circle.outline {
+    background-color: transparent;
+    border: 3px solid white; /* Thicker border */
+    box-sizing: border-box;
+}
+.day-circle.empty {
+    background-color: #2A2A2A;
+}
+
+.day-label {
+    font-size: 16px; /* Increased from 12px */
+    color: #909090;
+    font-weight: 500;
+}
+
+.day-dot {
+    width: 6px; /* Larger dot */
+    height: 6px;
+    background-color: #656565;
+    border-radius: 50%;
+    margin-top: 5px;
+}
+.day-item.active .day-dot {
+    background-color: white;
+}
+
+/* Prompt Card */
+.prompt-card {
+    width: 806px; 
+    height: 340px; /* Reduced to align with Write Card bottom (approx 761px total) */
+    background-color: var(--bg-subcard);
+    border-radius: 29px;
+    padding: 30px;
+    margin-left: 17px; 
+    margin-top: 20px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative; /* Ensure specific buttons can be absolute positioned inside */
+}
+
+/* New Edit/Action Button Top-Right of Prompt Card */
+.prompt-action-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 52px; /* Increased from 44px */
+    height: 52px; /* Increased from 44px */
+    background-color: rgba(255, 255, 255, 0.1); /* Grey/Glassy */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.prompt-action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.prompt-action-btn svg {
+    width: 28px; /* Increased from 24px */
+    height: 28px; /* Increased from 24px */
+}
+
+/* Edit Overlay for Prompt Card */
+.prompt-edit-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-subcard); 
+    border-radius: 29px;
+    z-index: 20; 
+    display: none; /* Toggled via JS */
+    flex-direction: column;
+    align-items: flex-start; /* Changed from center */
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.prompt-edit-btn-add,
+.prompt-edit-btn-close {
+    position: absolute;
+    top: 24px;
+    width: 52px; /* Matched Action Button */
+    height: 52px; /* Matched Action Button */
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    z-index: 10;
+}
+
+.prompt-edit-btn-add:hover,
+.prompt-edit-btn-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.prompt-edit-btn-add {
+    left: 24px;
+}
+
+.prompt-edit-btn-close {
+    right: 24px;
+}
+
+.prompt-edit-btn-add svg,
+.prompt-edit-btn-close svg {
+    width: 28px;
+    height: 28px;
+}
+
+.prompt-topic-list {
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 60px; /* Make space for header buttons */
+    padding-bottom: 20px;
+}
+
+.topic-item {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 10px 16px;
+    transition: background-color 0.2s;
+}
+
+.topic-item:focus-within {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.topic-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 18px; /* Reduced from 32px */
+    font-weight: 400;
+    outline: none;
+    font-family: inherit;
+    letter-spacing: -0.3px;
+}
+.topic-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.topic-delete-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.4;
+    margin-left: 10px;
+    transition: opacity 0.2s;
+}
+.topic-delete-btn:hover {
+    opacity: 1;
+}
+
+/* Custom Scrollbar for the list */
+.prompt-topic-list::-webkit-scrollbar {
+    width: 4px;
+}
+.prompt-topic-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.prompt-topic-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.prompt-icon {
+    margin-bottom: 30px; /* Increased space */
+    opacity: 0.8;
+}
+
+.prompt-icon svg {
+    width: 80px; /* Increased size greatly */
+    height: 80px;
+}
+
+.prompt-text {
+    font-size: 32px; /* Much larger text */
+    color: white;
+    margin-bottom: 40px; /* Increased space */
+    max-width: 85%;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+}
+
+.pagination-dots {
+    display: flex;
+    gap: 14px; /* Increased gap */
+}
+.pagination-dots .dot {
+    width: 12px; /* Larger dots */
+    height: 12px;
+    border-radius: 50%;
+    background-color: #2A2A2A;
+}
+.pagination-dots .dot.active {
+    background-color: white;
+}
+
+/* Char Count in Write Area */
+.char-count {
+    position: absolute;
+    /* .write-card height is 725px. We want this below it. */
+    top: 745px; /* 725px + 20px gap */
+    right: 10px;   /* Slight offset from right edge */
+    color: #404040; /* Dark grey similar to image footer */
+    font-size: 20px;
+    letter-spacing: -1px;
+    text-align: right;
+    font-weight: 500;
+}
+
+
+
+/* Mini Player in Write Header */
+.mini-player-filename {
+    flex-grow: 0; /* Stop growing to fill space */
+    width: 428px; /* Fixed width (approx 75% of available space, matching Radio view) */
+    color: #656565;
+    font-size: 20px;
+    margin-left: 20px;
+    margin-right: auto; /* Push the Play button to the far right */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* Marquee Effect for Texts */
+.track-info, .mini-player-filename {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    /* Ensure mask for smooth fade out at edges if desired, but simple cut-off for now */
+}
+
+/* Default state (paused): Centered or Left aligned as per original styles */
+/* But we need to override the flex layout behavior to allow the inner div to move */
+.track-info .scrolling-text, .mini-player-filename .scrolling-text {
+    display: inline-block;
+    width: auto;
+    /* When paused, it sits still. */
+    transition: transform 0.s;
+}
+
+/* Playing State Animation */
+.playing .scrolling-text {
+    animation: marquee 12s linear infinite;
+    padding-left: 100%; /* Start offset */
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%); /* Moves left by its own width + padding */
+    }
+}
+
+
+/* Marquee Effect for Texts */
+.track-info, .mini-player-filename {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    /* Ensure mask for smooth fade out at edges if desired, but simple cut-off for now */
+}
+
+/* Default state (paused): Centered or Left aligned as per original styles */
+/* But we need to override the flex layout behavior to allow the inner div to move */
+.track-info .scrolling-text, .mini-player-filename .scrolling-text {
+    display: inline-block;
+    width: auto;
+    /* When paused, it sits still. */
+    transition: transform 0.2s;
+}
+
+/* Playing State Animation */
+.playing .scrolling-text {
+    animation: marquee 12s linear infinite;
+    padding-left: 100%; /* Start offset */
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%); /* Moves left by its own width + padding */
+    }
+}
+
+
+/* Marquee Effect for Texts */
+.track-info, .mini-player-filename {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    /* Ensure mask for smooth fade out at edges if desired, but simple cut-off for now */
+}
+
+/* Default state (paused): Centered or Left aligned as per original styles */
+/* But we need to override the flex layout behavior to allow the inner div to move */
+.track-info .scrolling-text, .mini-player-filename .scrolling-text {
+    display: inline-block;
+    width: auto;
+    /* When paused, it sits still. */
+    transition: transform 0.2s;
+    /* Reset transform when paused */
+    transform: translateX(0);
+}
+
+/* Playing State Animation */
+.playing .scrolling-text {
+    animation: marquee 12s linear infinite;
+    padding-left: 100%; /* Keeps text pushed to right initially */
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(-100%); /* Start from Left (Text at -TextWidth) */
+    }
+    100% {
+        transform: translateX(0); /* End at Right (Text at ContainerWidth) */
+    }
+}
+
+
+/* Fix alignment for marquee in active state */
+.track-info.playing {
+    justify-content: flex-start; /* Override center alignment to allow full travel from left edge */
+}
+
+
+/* --- RECAP VIEW STYLES --- */
+
+/* Sidebar Star Button */
+.sidebar-btn-star {
+    width: 46px;
+    height: 46px; 
+    position: relative;
+    margin-bottom: 40px; 
+    cursor: pointer;
+    color: #656565; 
+    background-color: transparent; 
+    border-radius: 50%; 
+    transition: all 0.3s ease;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+}
+.sidebar-btn-star:hover {
+    color: #FFFFFF;
+    background-color: #2A2A2A;
+}
+.sidebar-btn-star.active {
+    color: #FFFFFF;
+    background-color: #2A2A2A; 
+}
+
+/* View Recap (Right) */
+#view-recap {
+    transform: translateY(100px); /* Default hidden direction */
+}
+#view-recap.active {
+    transform: translateY(0);
+}
+
+.recap-card {
+    position: relative;
+    width: 806px;
+    height: 725px; 
+    /* Gradient based on 'Red Card' description */
+    background: linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%);
+    border-radius: 29px;
+    padding: 40px;
+    box-sizing: border-box;
+    color: white;
+    overflow: hidden;
+}
+
+.recap-blur-bg {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.recap-content-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.recap-header {
+    margin-bottom: 40px;
+}
+.recap-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.recap-subtitle {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.recap-list-container h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+
+.session-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: background 0.2s;
+}
+.session-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.session-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.session-name {
+    font-size: 18px;
+    font-weight: 500;
+}
+.session-time {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.session-play-mini {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: white;
+    color: #EE5253;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.session-play-mini:hover {
+    transform: scale(1.05);
+}
+
+/* Left View Recap (Left) */
+#left-view-recap {
+    /* Initially hidden, same as view-write logic */
+    transform: translateY(-100px); 
+}
+#left-view-recap.active {
+    transform: translateY(0);
+}
+
+/* Header styles unified with .left-write-header */
+
+
+.generating-container {
+    margin-left: 17px;
+    width: 806px;
+}
+.gen-title {
+    color: #656565;
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding-left: 10px;
+}
+.gen-card {
+    background: #101010;
+    border-radius: 29px;
+    padding: 30px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.gen-info {
+    width: 100%;
+    text-align: center;
+}
+.gen-name {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+.gen-loader-row {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 15px;
+}
+.circular-loader {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #333;
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+
+/* --- UPDATED RECAP STYLES (MATCHING SCREENSHOT) --- */
+
+/* Left Side Updates */
+.gen-card.large {
+    height: 400px; /* Increased height */
+    justify-content: center;
+    background-color: #0A0A0A; /* Darker black */
+    border: 1px solid #1A1A1A;
+}
+
+.gen-loader-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 20px auto 0;
+}
+
+.circular-loader-large {
+    transform: rotate(-90deg);
+}
+
+.loader-bg {
+    fill: none;
+    stroke: #2A2A2A;
+    stroke-width: 6;
+}
+
+.loader-progress {
+    fill: none;
+    stroke: white;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 220; /* 2 * pi * 35 approx 220 */
+    stroke-dashoffset: 170; /* Partial fill */
+    transition: stroke-dashoffset 0.3s;
+}
+
+.gen-percent-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Right Side Updates */
+.recap-card {
+    /* Existing background gradient is correct: #FF6B6B to #EE5253 */
+    /* Remove padding for full bleed top bars if needed, but padding 40px is likely good */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Story Progress Bars */
+.story-progress-container {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.story-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 99px;
+    flex: 1;
+}
+.story-bar.active {
+    background: white;
+}
+
+/* Spacer to push buttons down */
+.recap-spacer {
+    flex-grow: 1;
+}
+
+/* Bottom Actions */
+.recap-actions {
+    display: flex;
+    gap: 20px;
+    padding-top: 20px;
+}
+
+.action-btn {
+    flex: 1;
+    height: 50px;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: transform 0.2s;
+}
+.action-btn:hover {
+    transform: scale(1.02);
+}
+
+.action-btn.outline {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+}
+
+.action-btn.filled {
+    background: white;
+    border: none;
+    color: black;
+}
+
+
+
+/* --- FINE TUNING LEFT RECAP --- */
+
+/* Recap Header now uses .left-write-header classes */
+
+
+
+/* Generating Text */
+.gen-title {
+    font-size: 20px;
+    color: white; /* Bright white title */
+    margin-bottom: 25px; /* More space */
+    padding-left: 0;
+    font-weight: 500;
+}
+
+/* Large Card */
+.gen-card.large {
+    background-color: #0A0A0A; /* Deep black */
+    border-radius: 29px; /* Match design */
+    height: 480px; /* Taller to fill space */
+    border: none; /* No border visible in dark mode often, but keep if needed */
+}
+
+.gen-name {
+    font-size: 18px;
+    color: #E0E0E0;
+    margin-bottom: 40px; /* More space to loader */
+}
+
+/* Loader Animation */
+.circular-loader-large {
+    /* Rotating the whole SVG container */
+    animation: spinLoader 2s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes spinLoader {
+    0% { transform: rotate(-90deg); }
+    100% { transform: rotate(270deg); }
+}
+
+/* Refine Loader Stroke */
+.loader-bg {
+    stroke: #2A2A2A;
+    stroke-width: 8;
+}
+
+.loader-progress {
+    stroke: white;
+    stroke-width: 8;
+    stroke-linecap: round;
+    /* Keep existing dasharray but remove transition for pure spin if valid */
+    /* If user wants 'loading bar rotate', spinning the ring is best */
+}
+
+/* If the text rotates with the SVG, that's bad. */
+/* Text is outside SVG in HTML: .gen-percent-text */
+/* So text stays upright. Correct. */
+
+
+
+
+/* --- ANIMATED DOTS & ALIGNMENT FIXES --- */
+
+.gen-title {
+    font-size: 28px; /* Increased from 20px */
+    letter-spacing: -0.5px;
+    display: inline-block;
+    width: 100%; /* Ensure block width */
+    margin-bottom: 200px; /* Greatly increased to push card down */
+    font-weight: 500;
+    color: white;
+}
+
+.dot-anim::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+    display: inline-block;
+    width: 20px; /* fixed width to prevent jump */
+    text-align: left;
+}
+
+@keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+}
+
+/* Align Left Card Bottom with Right Card Bottom */
+
+.gen-card.large {
+    height: 440px; /* Significantly reduced height */
+    background-color: #0A0A0A;
+    display: flex; /* Flex to center vertically */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.gen-name {
+    margin-top: 0; 
+    margin-bottom: 50px; /* Push loader down a bit */
+}
+.gen-loader-container {
+    margin: 0; /* Reset margin, handle with flex gap */
+}
+
+
+
+/* --- FINAL ADJUSTMENTS FOR RECAP LOADER --- */
+
+.gen-title {
+    margin-top: 60px; /* Move title down */
+    margin-bottom: 30px; /* Reset bottom margin to bring card closer but not too close */
+    /* The large bottom margin before was pushing the card down, but now we use top margin for title position */
+}
+
+/* Adjust Card Position */
+/* Card needs to be pushed down to align with Right Card Bottom (725px) */
+/* Right Card Bottom is at Top + 725 */
+/* Left Card: Header(36) + Margin(20) + Title(34+60+30) + CardHeight = Top + 180 + CardHeight */
+/* We want 180 + CardHeight = 725 => CardHeight = 545 */
+
+.gen-card.large {
+    height: 545px; 
+    justify-content: center; /* Vertical Center */
+    align-items: center; /* Horizontal Center */
+}
+
+/* Loader Size Updates */
+.gen-loader-container {
+    width: 120px;
+    height: 120px;
+    margin-top: 0;
+}
+
+.loader-progress {
+    stroke-dasharray: 339; /* 2 * pi * 54 */
+    stroke-dashoffset: 260; /* Partial fill */
+    stroke-width: 10;
+}
+
+.loader-bg {
+    stroke-width: 10;
+}
+
+/* Increase font size of percentage */
+.gen-percent-text {
+    font-size: 20px;
+}
+
+
+
+/* --- FORCE CENTERING --- */
+/* Ensure flexbox behavior is explicitly set to avoid inheritance issues */
+
+.gen-card.large {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 545px; /* Keep correct height */
+}
+
+.gen-info {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+/* Ensure container has width for centering */
+.gen-loader-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative;
+    /* Ensure no margins pulling it */
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Text centering */
+.gen-percent-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; /* Ensure text align center works within absolute box if needed */
+    text-align: center;
+    color: white;
+    z-index: 10;
+}
+
+
+
+/* --- RECAP VIEW ANIMATION OVERRIDE --- */
+/* Force Recaps to slide from Top to Bottom */
+
+#view-recap {
+    transform: translateY(-100px) !important; /* Slide From Top */
+}
+#view-recap.active {
+    transform: translateY(0) !important;
+}
+
+#left-view-recap {
+    transform: translateY(-100px) !important; /* Slide From Top */
+}
+#left-view-recap.active {
+    transform: translateY(0) !important;
+}
+
+
+/* Ensure Star Icon Sizing */
+.sidebar-btn-star svg {
+    width: 24px;
+    height: 24px;
+    color: currentColor; /* Inherit hover colors */
+}
+
+
+.prompt-text {
+    transition: opacity 0.2s ease;
+}
+.prompt-card {
+    cursor: pointer;
+}
+
+
+/* Enter Recap Button Logic - Bottom Left of Write Card */
+.enter-recap-btn {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none; /* Not clickable when hidden */
+    transition: opacity 0.3s ease, background-color 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.1); /* Visible background */
+    backdrop-filter: blur(15px); /* Glassmorphism Blur */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border for glass effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.enter-recap-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.enter-recap-btn:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.enter-recap-btn svg {
+    width: 28px;
+    height: 28px;
+}
+
+
+/* Updated Enter Recap Button Size & Position (Top Right) */
+.enter-recap-btn svg {
+    width: 100px !important;
+    height: 100px !important;
+}
+.enter-recap-btn {
+    width: 130px !important;
+    height: 130px !important;
+    left: auto !important;
+    bottom: auto !important;
+    right: 30px !important;
+    top: 30px !important;
+}
+
+/* Disabled State for Sidebar Link to prevent normal access */
+.sidebar-btn-star {
+    pointer-events: none;
+    opacity: 0.3;
+}
+.sidebar-btn-star.active {
+    pointer-events: auto; /* Active state allows interaction (e.g. exit?) or just indicates state */
+    opacity: 1;
+}
+
+
+/* Custom Scrollbar for Write Area (Pill Shape) */
+.write-area::-webkit-scrollbar {
+    width: 10px;
+}
+.write-area::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 10px 0; /* Add top/bottom spacing if needed, though scrollbar-track doesn't support margin well on all, transparent bg is fine */
+}
+.write-area::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2); 
+    border-radius: 99px; /* Pill shape */
+    border: 3px solid transparent; /* Creates padding effect so it looks like a floating pill */
+    background-clip: content-box;
+}
+.write-area::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+
+/* Pricing Modal Styles */
+.pricing-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.pricing-modal.visible {
+    display: flex; /* Flex to center */
+    opacity: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.pricing-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Dark background */
+    backdrop-filter: blur(5px);
+}
+
+.pricing-content {
+    position: relative;
+    z-index: 1001;
+    display: flex;
+    gap: 20px; /* Reduced gap */
+    align-items: center;
+    background-color: #1A1A1A; /* Dark Grey Box */
+    padding: 30px;
+    border-radius: 30px;
+    border: none;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.plan-card {
+    position: relative;
+    width: 250px; /* Reduced width */
+    height: 320px; /* Reduced height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 25px;
+    border-radius: 16px;
+    box-sizing: border-box;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+/* Free Plan Highlight - Inside the box, make it look active */
+.plan-card.active {
+    border: none;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Hover effect for Pro and Max */
+.plan-card:not(.active):hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Plan Pills (Top Right) */
+.plan-pill {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.plan-pill.outlined {
+    border: 1px solid white;
+    color: white;
+}
+
+.plan-pill.filled {
+    background: white;
+    color: black;
+    font-weight: 600;
+}
+
+/* Typography */
+.plan-details h2 {
+    font-size: 30px; /* Reduced */
+    font-weight: 400; /* Thin look */
+    margin-top: 50px; 
+    margin-bottom: 10px;
+    color: white;
+}
+
+.plan-quote {
+    font-size: 14px; /* Reduced */
+    opacity: 0.7;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.plan-desc {
+    font-size: 13px; /* Reduced */
+    opacity: 0.5;
+}
+
+/* Plan Action Button */
+.plan-btn {
+    width: fit-content;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.plan-btn:hover:not(.disabled) {
+    border-color: white;
+    color: white;
+}
+
+.plan-btn.disabled {
+    cursor: default;
+    opacity: 0.5;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+
+/* --- DISCOVERY VIEW STYLES (Globe/Support) --- */
+
+#view-discovery {
+    /* Right side placeholder */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+#left-view-discovery {
+    /* Left side list */
+    padding-top: 20px;
+}
+
+.discovery-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.discovery-card {
+    background-color: #121212;
+    border: 1px solid #1E1E1E;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.discovery-card:hover {
+    background-color: #1A1A1A;
+    border-color: #333;
+    transform: translateY(-1px);
+}
+
+
+.discovery-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.discovery-info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.discovery-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+.discovery-location {
+    font-size: 13px;
+    color: #666666;
+}
+
+.discovery-pill {
+    /* Existing pill styles, ensure flex alignment */
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #000;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    color: #FFFFFF;
+}
+
+.discovery-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #61E061; /* Bright Green */
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(97, 224, 97, 0.4);
+}
+
+.discovery-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.discovery-handle {
+    font-size: 13px;
+    color: #888888;
+}
+
+.discovery-listeners {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #888;
+}
+
+/* Map Container in Right View */
+.discovery-map-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 29px; /* Match other cards */
+    overflow: hidden;
+    position: relative;
+    background-color: #000; /* Fallback */
+}
+
+
+.discovery-listeners svg {
+    color: #444; /* Icon color */
+}
+
+/* Ensure view transitions for discovery work like the others */
+#left-view-discovery {
+    transform: translateY(-20px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+
+#left-view-discovery.active {
+    transform: translateY(0);
+}
+
+
+/* Draft Pill Button */
+.draft-pill-btn {
+    position: absolute;
+    bottom: 40px;
+    left: 60px;
+    background-color: transparent; /* Default state */
+    border: 1px solid #333; /* Darker grey border */
+    color: var(--text-grey);
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 20;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.draft-pill-btn:hover {
+    border-color: #fff;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.draft-pill-btn.active {
+    background-color: #fff;
+    color: #000;
+    border-color: #fff;
+    font-weight: 600;
+}
+
+.draft-pill-btn.active .draft-text {
+    color: #000;
+}
+
+/* Tooltip for Drafts */
+.draft-tooltip {
+    position: absolute;
+    bottom: 50px; /* Above the pill */
+    left: 0;
+    width: 200px; /* Slightly wider for text */
+    background-color: #262626;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 12px;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    z-index: 30;
+    pointer-events: auto; /* Allow clicking */
+}
+
+/* Controlled via JS class */
+.draft-tooltip.visible {
+    display: flex;
+    animation: fadeInTooltip 0.2s ease forwards;
+}
+
+@keyframes fadeInTooltip {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.draft-item-row {
+    font-size: 13px;
+    color: #666;
+    padding: 8px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    cursor: default;
+}
+
+.draft-item-row.filled {
+    color: #ccc;
+    cursor: pointer;
+}
+
+.draft-item-row.filled:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+
+
